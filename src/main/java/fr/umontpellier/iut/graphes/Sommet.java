@@ -1,11 +1,10 @@
 package fr.umontpellier.iut.graphes;
 
 import fr.umontpellier.iut.trains.Jeu;
+import fr.umontpellier.iut.trains.Joueur;
 import fr.umontpellier.iut.trains.plateau.Tuile;
 
-import java.util.HashSet;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Classe modélisant les sommets. Le numéro du sommet correspond à la numérotation du plateau en partant
@@ -44,9 +43,24 @@ public class Sommet {
         this.voisins = new HashSet<>();
     }
 
+    /**
+     * Pré-requis : tuile n'est pas une tuile mer
+     * @param tuile
+     * @param jeu
+     */
 
     public Sommet(Tuile tuile, Jeu jeu) {
-        throw new RuntimeException("Méthode à implémenter");
+        this.i = jeu.getTuiles().indexOf(tuile);
+        this.surcout = tuile.getSurcout();
+        this.joueurs = new HashSet<>();
+        for (int i = 0; i < jeu.getJoueurs().size(); i++) {
+            if (tuile.hasRail(jeu.getJoueurs().get(i))) {
+                joueurs.add(i);
+            }
+        }
+        this.nbPointsVictoire = tuile.getNbPointsVictoire();
+        this.voisins = new HashSet<>();
+
     }
 
     /**
@@ -86,11 +100,14 @@ public class Sommet {
     }
 
     public void ajouterVoisin(Sommet voisin) {
-        throw new RuntimeException("Méthode à implémenter");
+        this.voisins.add(voisin);
     }
 
     public boolean estVoisin(Sommet sommet) {
-        throw new RuntimeException("Méthode à implémenter");
+        if (voisins.contains(sommet)){
+            return true;
+        }
+        return false;
     }
 
     @Override

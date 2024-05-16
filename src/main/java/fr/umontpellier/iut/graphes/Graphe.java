@@ -20,16 +20,28 @@ public class Graphe {
      * Construit un graphe à n sommets 0..n-1 sans arêtes
      */
     public Graphe(int n) {
-        throw new RuntimeException("Méthode à implémenter");
+        sommets = new HashSet<>();
+        for (int i = 0; i < n; i++){
+            Sommet a = new Sommet.SommetBuilder().setIndice(i).setJoueurs(null).setSurcout(0).setNbPointsVictoire(0).createSommet();
+            sommets.add(a);
+        }
     }
 
     /**
      * Construit un graphe vide
      */
     public Graphe() {
-        throw new RuntimeException("Méthode à implémenter");
+        this.sommets = new HashSet<>();
     }
-
+/*
+    public Graphe(Graphe graphe){
+        this.sommets = new HashSet<>();
+        for (Sommet a : graphe.sommets){
+            Sommet s = new Sommet.SommetBuilder().setIndice(a.getIndice()).setJoueurs(a.getJoueurs()).setSurcout(a.getSurcout()).setNbPointsVictoire(a.getNbPointsVictoire()).createSommet();
+            sommets.add(s);
+        }
+    }
+*/
     /**
      * Construit un sous-graphe induit par un ensemble de sommets
      * sans modifier le graphe donné
@@ -39,6 +51,28 @@ public class Graphe {
      *          même si en principe ce n'est pas obligatoire)
      */
     public Graphe(Graphe g, Set<Sommet> X) {
+        /*Graphe res = new Graphe();
+        Set<Sommet> SommetDeg = g.sommets;
+        Set<Sommet> SommetDeX = new HashSet<>();
+        SommetDeX.addAll(X);
+
+        /*
+        for (int i = 0 ; i < g.getNbSommets(); i++){
+
+            g.sommets.
+            if (!g.sommets.contains(X.))
+            res.ajouterSommet(new Sommet(getSommet(i)));
+            //Sommet sommetDeG = getSommet(i);
+            //Set<Sommet> voisinsDuSommetDeG = sommetDeG.getVoisins();
+
+            }
+            Sommet temp = X.iterator().next();
+            if (g.getSommets().contains(temp)){
+
+            }
+
+    }*/
+
         throw new RuntimeException("Méthode à implémenter");
     }
 
@@ -97,14 +131,29 @@ public class Graphe {
      * @return l'ensemble d'arêtes du graphe sous forme d'ensemble de paires de sommets
      */
     public Set<Set<Sommet>> getAretes() {
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Set<Sommet>> aretes = new HashSet<>();
+        for (Sommet s : sommets){
+            Set<Sommet> voisins = s.getVoisins();
+            for (Sommet voisin : voisins){
+                Set<Sommet> arr = new HashSet<>();
+                arr.add(s);
+                arr.add(voisin);
+                aretes.add(arr);
+            }
+        }
+
+        return aretes;
     }
 
     /**
      * @return le nombre d'arêtes du graphe
      */
     public int getNbAretes() {
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Sommet> aretes = new HashSet<>();
+        for (Sommet s : sommets){
+            aretes.addAll(s.getVoisins()); // comme c'est un hashset ça enlève les doublons :)
+        }
+        return aretes.size();
     }
 
     /**
@@ -139,13 +188,16 @@ public class Graphe {
      * @return true si et seulement si this est complet.
      */
     public boolean estComplet() {
-        throw new RuntimeException("Méthode à implémenter");
+        int  ordre = this.sommets.size();
+        int tailleMax = ordre*(ordre-1)/2;
+        return ordre == tailleMax;
     }
 
     /**
      * @return true si et seulement si this est une chaîne. On considère que le graphe vide est une chaîne.
      */
     public boolean estChaine() {
+        Set<Set<Sommet>> aretes = getAretes();
         throw new RuntimeException("Méthode à implémenter");
     }
 
@@ -153,6 +205,10 @@ public class Graphe {
      * @return true si et seulement si this est un cycle. On considère que le graphe vide n'est pas un cycle.
      */
     public boolean estCycle() {
+        if (sommets.size() < 3) return false;
+        if (!estConnexe()) return false;
+        Set<Set<Sommet>> aretes = getAretes();
+
         throw new RuntimeException("Méthode à implémenter");
     }
 
@@ -179,11 +235,13 @@ public class Graphe {
     }
 
     public void ajouterArete(Sommet s, Sommet t) {
-        throw new RuntimeException("Méthode à implémenter");
+        s.ajouterVoisin(t);
+        t.ajouterVoisin(s);
     }
 
     public void supprimerArete(Sommet s, Sommet t) {
-        throw new RuntimeException("Méthode à implémenter");
+        s.getVoisins().remove(t);
+        t.getVoisins().remove(s);
     }
 
     /**

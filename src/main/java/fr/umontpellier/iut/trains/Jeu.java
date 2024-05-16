@@ -405,7 +405,46 @@ public class Jeu implements Runnable {
      * @return le graphe des tuiles du jeu (sans les tuiles Mer)
      */
     public Graphe getGraphe() {
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Sommet> sommets = new HashSet<>();
+        for (int i = 0; i < tuiles.size(); i++){
+            if (!tuiles.get(i).getType().equals("Mer")){
+                Sommet s = new Sommet(tuiles.get(i), this);
+                sommets.add(s);
+            }
+        }
+
+        Graphe g = new Graphe(sommets);
+
+        int i;
+
+        for (Sommet s : sommets){
+            i = s.getIndice();
+            List<Tuile> voisins = tuiles.get(i).getVoisines();
+            int j = 0;
+            int k = 0;
+            while (k < voisins.size() && j < tuiles.size()){
+                if (voisins.contains(tuiles.get(j))){
+                    //implémenter méthode pour les joueurs
+                    Set<Integer> joueurs1 = new HashSet<>();
+                    int a = 0;
+                    for (Joueur joueur : joueurs){
+                        if (tuiles.get(i).hasRail(joueur)){
+                            joueurs1.add(a);
+                        }
+                        a++;
+                    }
+                    Sommet s1 = new Sommet.SommetBuilder().setIndice(j).setSurcout(tuiles.get(j).getSurcout()).setJoueurs(joueurs1).setNbPointsVictoire(tuiles.get(j).getNbPointsVictoire()).createSommet();
+                    Set<Sommet> arete = new HashSet<>();
+                    arete.add(s);
+                    arete.add(s1);
+                    g.ajouterArete(s, s1);
+                    k++;
+                }
+                j++;
+            }
+        }
+
+        return g;
     }
 
     /**
@@ -414,6 +453,13 @@ public class Jeu implements Runnable {
      *         rails
      */
     public Graphe getGraphe(Joueur joueur) {
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Sommet> sommets = new HashSet<>();
+        for (int i = 0; i < tuiles.size(); i++){
+            if (tuiles.get(i).hasRail(joueur) && !tuiles.get(i).getType().equals("Mer")){
+                Sommet s = new Sommet(tuiles.get(i), this);
+                sommets.add(s);
+            }
+        }
+        return new Graphe(sommets);
     }
 }

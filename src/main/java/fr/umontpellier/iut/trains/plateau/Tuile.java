@@ -14,6 +14,12 @@ public abstract class Tuile {
         this.rails = new HashSet<>();
     }
 
+    public abstract String getType();
+
+    public Set<Joueur> getRails(){
+        return rails;
+    }
+
     // Utilisée dans les tests
     public boolean estVide() {
         return rails.isEmpty();

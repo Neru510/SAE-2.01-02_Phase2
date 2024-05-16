@@ -8,6 +8,11 @@ public class TuileMer extends Tuile {
     }
 
     @Override
+    public String getType() {
+        return "Mer";
+    }
+
+    @Override
     public boolean peutPlacerRail(Joueur joueur) {
         return false;
     }

@@ -46,4 +46,12 @@ public class GrapheTest {
         assertTrue(graphe.possedeUnCycle());
         assertEquals(6, graphe.degreMax());
     }
+
+    @Test
+    public void test_getGraphe_tokyo(){
+        Jeu jeu = new Jeu(new String[]{"Batman", "Robin"}, new String[]{}, Plateau.TOKYO);
+        Graphe graphe = jeu.getGraphe();
+        assertEquals(66, graphe.getNbSommets());
+        assertEquals(156, graphe.getNbAretes());
+    }
 }
