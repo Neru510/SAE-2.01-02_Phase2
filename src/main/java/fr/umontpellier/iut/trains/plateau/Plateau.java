@@ -4,12 +4,13 @@ import java.util.Arrays;
 import java.util.List;
 
 public enum Plateau {
-    OSAKA, TOKYO;
+    OSAKA, TOKYO, TEST;
 
     public List<Tuile> makeTuiles() {
         return switch (this) {
             case OSAKA -> makeTuilesOsaka();
             case TOKYO -> makeTuilesTokyo();
+            case TEST -> makeTuilesTest();
         };
     }
 
@@ -17,6 +18,7 @@ public enum Plateau {
         return switch (this) {
             case OSAKA -> "Osaka";
             case TOKYO -> "Tokyo";
+            case TEST -> "Test";
         };
     }
 
@@ -131,8 +133,44 @@ public enum Plateau {
         return Arrays.stream(array).flatMap(Arrays::stream).toList();
     }
 
+    private static List<Tuile> makeTuilesTest() {
+        Tuile[][] array = new Tuile[][] {
+                new Tuile[] {
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                },
+                new Tuile[] {
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                },
+                new Tuile[] {
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                        new TuileTerrain(TypeTerrain.PLAINE),
+                }
+        };
+        placerTuiles(array);
+        /*
+        array[0][0].supprimerVoisine(array[1][0]);
+        array[0][1].supprimerVoisine(array[1][1]);
+        array[0][5].supprimerVoisine(array[0][6]);
+        array[0][6].supprimerVoisine(array[1][5]);
+        array[0][6].supprimerVoisine(array[1][6]);
+        array[4][4].supprimerVoisine(array[5][3]);
+        array[4][4].supprimerVoisine(array[5][4]);
+        array[5][3].supprimerVoisine(array[5][4]);
+        array[4][9].supprimerVoisine(array[5][8]);
+        array[7][2].supprimerVoisine(array[7][3]);
+        array[7][7].supprimerVoisine(array[7][8]);*/
+
+        return Arrays.stream(array).flatMap(Arrays::stream).toList();
+    }
+
+
     private static void placerTuiles(Tuile[][] array) {
-        for (int i = 0; i < 8; i++) {
+        for (int i = 0; i < array.length; i++) {
             for (int j = 0; j < array[i].length; j++) {
                 if (j + 1 < array[i].length) {  // voisine de droite
                     array[i][j].ajouterVoisine(array[i][j + 1]);

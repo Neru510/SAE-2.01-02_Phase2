@@ -27,6 +27,20 @@ public class Graphe {
         }
     }
 
+    public String toStringArete(){
+        String s = "";
+        Set<Set<Sommet>> aretes = getAretes();
+        for (Set<Sommet> sommets : aretes){
+            for (Sommet sommet : sommets){
+                s += sommet.getIndice();
+                s += ",";
+            }
+            s += ";\n";
+
+        }
+        return s;
+    }
+
     /**
      * Construit un graphe vide
      */
@@ -149,9 +163,19 @@ public class Graphe {
      * @return le nombre d'arêtes du graphe
      */
     public int getNbAretes() {
-        Set<Sommet> aretes = new HashSet<>();
+        Set<Set<Sommet>> aretes = new HashSet<>();
         for (Sommet s : sommets){
-            aretes.addAll(s.getVoisins()); // comme c'est un hashset ça enlève les doublons :)
+            Set<Sommet> voisins = s.getVoisins();
+            for (Sommet voisin : voisins){
+                Set<Sommet> arete = new HashSet<>();
+                arete.add(s);
+                arete.add(voisin);
+                aretes.add(arete);
+                arete.add(voisin);
+                arete.add(s);
+                aretes.add(arete);
+            }
+
         }
         return aretes.size();
     }
@@ -162,7 +186,12 @@ public class Graphe {
      * @param i l'entier correspondant à l'indice du sommet à ajouter dans le graphe
      */
     public boolean ajouterSommet(int i) {
-        throw new RuntimeException("Méthode à implémenter");
+        Sommet sommet = new Sommet.SommetBuilder().setIndice(i).setJoueurs(null).setSurcout(0).setNbPointsVictoire(0).createSommet();
+        if (!sommets.contains(sommet)){
+            sommets.add(sommet);
+            return true;
+        }
+        return false;
     }
 
     /**

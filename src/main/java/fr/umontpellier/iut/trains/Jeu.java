@@ -133,6 +133,15 @@ public class Jeu implements Runnable {
         return tuiles.get(index);
     }
 
+    public int getNbArete(){
+        ArrayList<Tuile> voisines = new ArrayList<>();
+        for (Tuile t : tuiles){
+            voisines.addAll(t.getVoisines());
+        }
+
+        return voisines.size()/2;
+    }
+
     /**
      * Renvoie un ensemble de tous les noms des cartes en jeu.
      * 
@@ -401,10 +410,7 @@ public class Jeu implements Runnable {
         return joueurs;
     }
 
-    /**
-     * @return le graphe des tuiles du jeu (sans les tuiles Mer)
-     */
-    public Graphe getGraphe() {
+    public Set<Sommet> transformeTuileEnSommet(){
         Set<Sommet> sommets = new HashSet<>();
         for (int i = 0; i < tuiles.size(); i++){
             if (!tuiles.get(i).getType().equals("Mer")){
@@ -412,38 +418,33 @@ public class Jeu implements Runnable {
                 sommets.add(s);
             }
         }
+        return sommets;
+    }
+
+    public void ajouterVoisine(Graphe g, Tuile t, Set<Sommet> sommets, Sommet ts){
+        List<Tuile> voisins = t.getVoisines();
+        for (Tuile v : voisins){
+            Sommet trial = new Sommet(v, this);
+            for (Sommet s : sommets){ // à modifier
+                if (trial.equals(s)){
+                    g.ajouterArete(s, ts);
+                    break;
+                }
+            }
+        }
+    }
+
+    /**
+     * @return le graphe des tuiles du jeu (sans les tuiles Mer)
+     */
+    public Graphe getGraphe() {
+        Set<Sommet> sommets = transformeTuileEnSommet();
 
         Graphe g = new Graphe(sommets);
 
-        int i;
-
         for (Sommet s : sommets){
-            i = s.getIndice();
-            List<Tuile> voisins = tuiles.get(i).getVoisines();
-            int j = 0;
-            int k = 0;
-            while (k < voisins.size() && j < tuiles.size()){
-                if (voisins.contains(tuiles.get(j))){
-                    //implémenter méthode pour les joueurs
-                    Set<Integer> joueurs1 = new HashSet<>();
-                    int a = 0;
-                    for (Joueur joueur : joueurs){
-                        if (tuiles.get(i).hasRail(joueur)){
-                            joueurs1.add(a);
-                        }
-                        a++;
-                    }
-                    Sommet s1 = new Sommet.SommetBuilder().setIndice(j).setSurcout(tuiles.get(j).getSurcout()).setJoueurs(joueurs1).setNbPointsVictoire(tuiles.get(j).getNbPointsVictoire()).createSommet();
-                    Set<Sommet> arete = new HashSet<>();
-                    arete.add(s);
-                    arete.add(s1);
-                    g.ajouterArete(s, s1);
-                    k++;
-                }
-                j++;
-            }
+            ajouterVoisine(g, tuiles.get(s.getIndice()), sommets, s);
         }
-
         return g;
     }
 
@@ -460,6 +461,11 @@ public class Jeu implements Runnable {
                 sommets.add(s);
             }
         }
+        Graphe g = new Graphe(sommets);
+        for (Sommet s : sommets){
+            ajouterVoisine(g, tuiles.get(s.getIndice()), sommets, s);
+        }
+
         return new Graphe(sommets);
     }
 }
