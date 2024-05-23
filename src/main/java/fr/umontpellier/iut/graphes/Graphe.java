@@ -276,6 +276,7 @@ public class Graphe {
      */
     public boolean estCycle() {
         if (sommets.size() < 3) return false;
+        if (getNbAretes() != getNbSommets()) return false;
         if (!estConnexe()) return false;
         Set<Sommet> sommet = new HashSet<>(sommets);
         for (Sommet res : sommet){
@@ -387,7 +388,7 @@ public class Graphe {
      * @return true si et seulement si this est connexe.
      */
     public boolean estConnexe() {
-        throw new RuntimeException("Méthode à implémenter");
+        this.getClasseConnexite(this.getSommet())
     }
 
     /**
