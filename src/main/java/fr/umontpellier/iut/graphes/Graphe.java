@@ -67,12 +67,14 @@ public class Graphe {
      *          même si en principe ce n'est pas obligatoire)
      */
     public Graphe(Graphe g, Set<Sommet> X) {
-        /*Graphe res = new Graphe();
+
+       /*
+        Graphe res = new Graphe();
         Set<Sommet> SommetDeg = g.sommets;
         Set<Sommet> SommetDeX = new HashSet<>();
         SommetDeX.addAll(X);
 
-        /*
+
         for (int i = 0 ; i < g.getNbSommets(); i++){
 
             g.sommets.
@@ -86,8 +88,8 @@ public class Graphe {
             if (g.getSommets().contains(temp)){
 
             }
+*/
 
-    }*/
 
         throw new RuntimeException("Méthode à implémenter");
     }
@@ -275,9 +277,14 @@ public class Graphe {
     public boolean estCycle() {
         if (sommets.size() < 3) return false;
         if (!estConnexe()) return false;
-        Set<Set<Sommet>> aretes = getAretes();
-
-        throw new RuntimeException("Méthode à implémenter");
+        boolean pasCycle = true;
+        Set<Sommet> sommet = new HashSet<>(sommets);
+        for (Sommet res : sommet){
+            if (res.getVoisins().size() != 2){
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
