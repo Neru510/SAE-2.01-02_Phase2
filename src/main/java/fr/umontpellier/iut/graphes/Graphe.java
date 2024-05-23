@@ -280,10 +280,10 @@ public class Graphe {
         Set<Sommet> sommet = new HashSet<>(sommets);
         for (Sommet res : sommet){
             if (res.getVoisins().size() != 2){
-                pasCycle = false;
+                return false;
             }
         }
-        return pasCycle;
+        return true;
     }
 
     /**
