@@ -277,7 +277,6 @@ public class Graphe {
     public boolean estCycle() {
         if (sommets.size() < 3) return false;
         if (!estConnexe()) return false;
-        boolean pasCycle = true;
         Set<Sommet> sommet = new HashSet<>(sommets);
         for (Sommet res : sommet){
             if (res.getVoisins().size() != 2){
