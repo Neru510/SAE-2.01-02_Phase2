@@ -388,7 +388,7 @@ public class Graphe {
      * @return true si et seulement si this est connexe.
      */
     public boolean estConnexe() {
-        this.getClasseConnexite(this.getSommet())
+        return getClasseConnexite(getSommet(0)).equals(sommets);
     }
 
     /**

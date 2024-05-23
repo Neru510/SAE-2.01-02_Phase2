@@ -142,6 +142,63 @@ public class GrapheTest {
     }
 
     @Test
+    public void test_estConnexe_4_sommet_cyclique(){
+        Graphe g = new Graphe(4);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(0));
+        assertTrue(g.estConnexe());
+    }
+    @Test
+    public void test_estConnexe_4_sommet_acyclique(){
+        Graphe g = new Graphe(4);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        assertTrue(g.estConnexe());
+    }
+    @Test
+    public void test_estConnexe_5_sommet_acyclique_1_sommet_sans_aretes(){
+        Graphe g = new Graphe(5);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        assertFalse(g.estConnexe());
+    }
+
+    @Test
+    public void test_estConnexe_10_sommet_acyclique_connexe(){
+        Graphe g = new Graphe(10);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(6));
+        g.ajouterArete(g.getSommet(6), g.getSommet(7));
+        g.ajouterArete(g.getSommet(7), g.getSommet(8));
+        g.ajouterArete(g.getSommet(8), g.getSommet(9));
+        assertTrue(g.estConnexe());
+    }
+
+    @Test
+    public void test_estConnexe_10_sommet_forment_2_cicle_pas_lier(){
+        Graphe g = new Graphe(10);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(0));
+        g.ajouterArete(g.getSommet(5), g.getSommet(6));
+        g.ajouterArete(g.getSommet(6), g.getSommet(7));
+        g.ajouterArete(g.getSommet(7), g.getSommet(8));
+        g.ajouterArete(g.getSommet(8), g.getSommet(9));
+        g.ajouterArete(g.getSommet(9), g.getSommet(5));
+        assertFalse(g.estConnexe());
+    }
+
+    @Test
     public void main(){
         Jeu jeu = new Jeu(new String[]{"Batman", "Robin"}, new String[]{}, Plateau.TOKYO);
         Graphe graphe = jeu.getGraphe();
