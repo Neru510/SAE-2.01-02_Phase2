@@ -281,10 +281,10 @@ public class Graphe {
         Set<Sommet> sommet = new HashSet<>(sommets);
         for (Sommet res : sommet){
             if (res.getVoisins().size() != 2){
-                return false;
+                pasCycle = false;
             }
         }
-        return true;
+        return pasCycle;
     }
 
     /**
@@ -395,7 +395,13 @@ public class Graphe {
      * @return le degré maximum des sommets du graphe
      */
     public int degreMax() {
-        throw new RuntimeException("Méthode à implémenter");
+        int degreMax = 0;
+        for (Sommet s : sommets){
+            if (s.getVoisins().size() > degreMax){
+                degreMax = s.getVoisins().size();
+            }
+        }
+        return degreMax;
     }
 
     /**

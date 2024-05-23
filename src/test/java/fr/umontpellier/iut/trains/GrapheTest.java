@@ -128,6 +128,18 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(5), g.getSommet(0));
         assertFalse(g.estChaine());
     }
+    @Test
+    public void test_degreMax_3(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(3), g.getSommet(5));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(0));
+        assertEquals(3, g.degreMax());
+    }
 
     @Test
     public void main(){
