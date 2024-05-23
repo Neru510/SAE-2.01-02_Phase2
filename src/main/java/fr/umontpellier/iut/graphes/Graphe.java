@@ -2,6 +2,7 @@ package fr.umontpellier.iut.graphes;
 
 import org.glassfish.grizzly.utils.ArraySet;
 
+import javax.swing.text.GapContent;
 import java.util.*;
 
 /**
@@ -49,7 +50,7 @@ public class Graphe {
     public Graphe() {
         this.sommets = new HashSet<>();
     }
-/*
+
     public Graphe(Graphe graphe){
         this.sommets = new HashSet<>();
         for (Sommet a : graphe.sommets){
@@ -57,7 +58,7 @@ public class Graphe {
             sommets.add(s);
         }
     }
-*/
+
     /**
      * Construit un sous-graphe induit par un ensemble de sommets
      * sans modifier le graphe donné
@@ -214,7 +215,7 @@ public class Graphe {
      * @return le degré du sommet {@code s}
      */
     public int degre(Sommet s) {
-        throw new RuntimeException("Méthode à implémenter");
+        return s.getVoisins().size();
     }
 
     /**
@@ -299,7 +300,25 @@ public class Graphe {
      * @return true si et seulement si this a au moins un cycle. On considère que le graphe vide n'est pas un cycle.
      */
     public boolean possedeUnCycle() {
-        throw new RuntimeException("Méthode à implémenter");
+        if (sommets.size() < 3) return false;
+        Graphe g = eplucherDegres1();
+        int a = g.sommets.size();
+        return !(g.sommets.isEmpty());
+    }
+
+    public Graphe eplucherDegres1(){ //enlève tous les sommets de degré 1
+        Graphe g = new Graphe(this);
+        boolean check = false;
+        while (!check){
+            check = true;
+            for (Sommet s : sommets){
+                if (g.sommets.contains(s) && degre(s) <= 1){
+                    g.supprimerSommet(s);
+                    check = false;
+                }
+            }
+        }
+        return g;
     }
 
     /**
@@ -317,6 +336,13 @@ public class Graphe {
     public void supprimerArete(Sommet s, Sommet t) {
         s.getVoisins().remove(t);
         t.getVoisins().remove(s);
+    }
+    public void supprimerSommet(Sommet s){
+        Set<Sommet> voisins = s.getVoisins();
+        for (Sommet v : voisins){
+            v.getVoisins().remove(s);
+        }
+        sommets.remove(s);
     }
 
     /**

@@ -199,6 +199,54 @@ public class GrapheTest {
     }
 
     @Test
+    public void test_eplucherDegres1_1(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(3), g.getSommet(5));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        Graphe gg = g.eplucherDegres1();
+        assertEquals(3, gg.getNbSommets());
+    }
+
+    @Test
+    public void test_eplucherDegres1_2(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        Graphe gg = g.eplucherDegres1();
+        assertEquals(0, gg.getNbSommets());
+    }
+
+    @Test
+    public void test_possedeUnCycle_vra(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(0));
+        assertTrue(g.possedeUnCycle());
+    }
+
+    @Test
+    public void test_possedeUnCycle_faux(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        assertFalse(g.possedeUnCycle());
+    }
+
+    @Test
     public void main(){
         Jeu jeu = new Jeu(new String[]{"Batman", "Robin"}, new String[]{}, Plateau.TOKYO);
         Graphe graphe = jeu.getGraphe();
