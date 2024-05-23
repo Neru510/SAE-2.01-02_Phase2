@@ -425,7 +425,7 @@ public class Jeu implements Runnable {
         List<Tuile> voisins = t.getVoisines();
         for (Tuile v : voisins){
             Sommet trial = new Sommet(v, this);
-            for (Sommet s : sommets){ // à modifier
+            for (Sommet s : sommets){
                 if (trial.equals(s)){
                     g.ajouterArete(s, ts);
                     break;

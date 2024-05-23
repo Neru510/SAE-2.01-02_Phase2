@@ -1,5 +1,7 @@
 package fr.umontpellier.iut.graphes;
 
+import org.glassfish.grizzly.utils.ArraySet;
+
 import java.util.*;
 
 /**
@@ -226,8 +228,45 @@ public class Graphe {
      * @return true si et seulement si this est une chaîne. On considère que le graphe vide est une chaîne.
      */
     public boolean estChaine() {
-        Set<Set<Sommet>> aretes = getAretes();
-        throw new RuntimeException("Méthode à implémenter");
+        if (sommets.size() < 2) return true;
+        Sommet a = null;
+        boolean check = false;
+        for (Sommet s : sommets){
+            Set<Sommet> sommetSet = s.getVoisins();
+            if (sommetSet.size() > 2){
+                return false;
+            }
+            else if (sommetSet.size() == 1){
+                if (a == null) a = s; // 1er sommet de degré 1
+                else if (!check) check = true; // 2d sommet de degré 1
+                else return false; // s'il y a 3 sommets de degré 1
+            }
+        }
+        if (a == null || !check){ // s'il n'y a pas de sommet de degré 1 OU s'il y a seulement 1 sommet de degré 1
+            return false;
+        }
+        // le graphe a donc 2 sommets de degré 1 et que des sommets de degré 2
+        Set<Sommet> sommetDejaVisite = new HashSet<>();
+        Sommet generique = a;
+        Sommet avantGuardiste = null;
+        check = false;
+        while (!check){
+            sommetDejaVisite.add(generique);
+            Set<Sommet> voisins = generique.getVoisins();
+            for (Sommet s : voisins){
+                if (!sommetDejaVisite.contains(s)){
+                    avantGuardiste = generique;
+                    generique = s;
+                }
+                else if (!a.equals(s) && voisins.size() == 1){
+                    check = true;
+                }
+                else if (avantGuardiste != null && !avantGuardiste.equals(s)){
+                    return false;
+                }
+            }
+        }
+        return sommetDejaVisite.size() == sommets.size();
     }
 
     /**

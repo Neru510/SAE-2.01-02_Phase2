@@ -1,14 +1,13 @@
 package fr.umontpellier.iut.trains;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.Test;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Timeout;
 
 import fr.umontpellier.iut.graphes.Graphe;
 import fr.umontpellier.iut.trains.plateau.Plateau;
+
+import static org.junit.jupiter.api.Assertions.*;
 
 @Timeout(value = 1, threadMode = Timeout.ThreadMode.SEPARATE_THREAD)
 public class GrapheTest {
@@ -93,6 +92,41 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(4), g.getSommet(3));
         assertEquals(6, g.getNbSommets());
         assertEquals(5, g.getNbAretes());
+    }
+
+    @Test
+    public void test_estChaine_vrai(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        assertTrue(g.estChaine());
+    }
+
+    @Test
+    public void test_estChaine_faux_1(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(3), g.getSommet(5));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        assertFalse(g.estChaine());
+    }
+
+    @Test
+    public void test_estChaine_faux_cycle(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(0));
+        assertFalse(g.estChaine());
     }
 
     @Test
