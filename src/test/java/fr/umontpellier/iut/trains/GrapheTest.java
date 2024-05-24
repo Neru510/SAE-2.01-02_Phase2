@@ -224,7 +224,7 @@ public class GrapheTest {
     }
 
     @Test
-    public void test_possedeUnCycle_vra(){
+    public void test_possedeUnCycle_vrai(){
         Graphe g = new Graphe(6);
         g.ajouterArete(g.getSommet(0), g.getSommet(1));
         g.ajouterArete(g.getSommet(1), g.getSommet(2));
@@ -233,6 +233,7 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(4), g.getSommet(5));
         g.ajouterArete(g.getSommet(5), g.getSommet(0));
         assertTrue(g.possedeUnCycle());
+        assertFalse(g.estForet());
     }
 
     @Test
@@ -244,6 +245,18 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(3), g.getSommet(4));
         g.ajouterArete(g.getSommet(4), g.getSommet(5));
         assertFalse(g.possedeUnCycle());
+        assertTrue(g.estForet());
+    }
+    @Test
+    public void test_estForet_vrai(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        assertFalse(g.possedeUnCycle());
+        assertTrue(g.estForet());
     }
 
     @Test

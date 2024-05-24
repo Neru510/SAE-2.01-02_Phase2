@@ -168,20 +168,7 @@ public class Graphe {
      * @return le nombre d'arêtes du graphe
      */
     public int getNbAretes() {
-        Set<Set<Sommet>> aretes = new HashSet<>();
-        for (Sommet s : sommets){
-            Set<Sommet> voisins = s.getVoisins();
-            for (Sommet voisin : voisins){
-                Set<Sommet> arete = new HashSet<>();
-                arete.add(s);
-                arete.add(voisin);
-                aretes.add(arete);
-                arete.add(voisin);
-                arete.add(s);
-                aretes.add(arete);
-            }
-
-        }
+        Set<Set<Sommet>> aretes = getAretes();
         return aretes.size();
     }
 
@@ -293,7 +280,7 @@ public class Graphe {
      * et que le graphe vide est un arbre.
      */
     public boolean estForet() {
-        throw new RuntimeException("Méthode à implémenter");
+        return estConnexe() && !possedeUnCycle();
     }
 
     /**
