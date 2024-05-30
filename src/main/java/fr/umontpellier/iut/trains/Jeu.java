@@ -133,15 +133,6 @@ public class Jeu implements Runnable {
         return tuiles.get(index);
     }
 
-    public int getNbArete(){
-        ArrayList<Tuile> voisines = new ArrayList<>();
-        for (Tuile t : tuiles){
-            voisines.addAll(t.getVoisines());
-        }
-
-        return voisines.size()/2;
-    }
-
     /**
      * Renvoie un ensemble de tous les noms des cartes en jeu.
      * 

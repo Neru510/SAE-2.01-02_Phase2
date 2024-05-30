@@ -152,18 +152,6 @@ public enum Plateau {
                 }
         };
         placerTuiles(array);
-        /*
-        array[0][0].supprimerVoisine(array[1][0]);
-        array[0][1].supprimerVoisine(array[1][1]);
-        array[0][5].supprimerVoisine(array[0][6]);
-        array[0][6].supprimerVoisine(array[1][5]);
-        array[0][6].supprimerVoisine(array[1][6]);
-        array[4][4].supprimerVoisine(array[5][3]);
-        array[4][4].supprimerVoisine(array[5][4]);
-        array[5][3].supprimerVoisine(array[5][4]);
-        array[4][9].supprimerVoisine(array[5][8]);
-        array[7][2].supprimerVoisine(array[7][3]);
-        array[7][7].supprimerVoisine(array[7][8]);*/
 
         return Arrays.stream(array).flatMap(Arrays::stream).toList();
     }

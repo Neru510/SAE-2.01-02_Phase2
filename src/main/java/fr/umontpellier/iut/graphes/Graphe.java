@@ -1,5 +1,6 @@
 package fr.umontpellier.iut.graphes;
 
+import fr.umontpellier.iut.trains.Joueur;
 import org.glassfish.grizzly.utils.ArraySet;
 
 import javax.swing.text.GapContent;
@@ -13,6 +14,19 @@ import java.util.*;
  */
 
 public class Graphe {
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Graphe graphe = (Graphe) o;
+        return Objects.equals(sommets, graphe.sommets);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(sommets);
+    }
+
     private final Set<Sommet> sommets;
 
     public Graphe(Set<Sommet> sommets) {
@@ -25,7 +39,7 @@ public class Graphe {
     public Graphe(int n) {
         sommets = new HashSet<>();
         for (int i = 0; i < n; i++){
-            Sommet a = new Sommet.SommetBuilder().setIndice(i).setJoueurs(null).setSurcout(0).setNbPointsVictoire(0).createSommet();
+            Sommet a = new Sommet.SommetBuilder().setIndice(i).setSurcout(0).setNbPointsVictoire(0).createSommet();
             sommets.add(a);
         }
     }
@@ -68,31 +82,17 @@ public class Graphe {
      *          même si en principe ce n'est pas obligatoire)
      */
     public Graphe(Graphe g, Set<Sommet> X) {
-
-       /*
-        Graphe res = new Graphe();
-        Set<Sommet> SommetDeg = g.sommets;
-        Set<Sommet> SommetDeX = new HashSet<>();
-        SommetDeX.addAll(X);
-
-
-        for (int i = 0 ; i < g.getNbSommets(); i++){
-
-            g.sommets.
-            if (!g.sommets.contains(X.))
-            res.ajouterSommet(new Sommet(getSommet(i)));
-            //Sommet sommetDeG = getSommet(i);
-            //Set<Sommet> voisinsDuSommetDeG = sommetDeG.getVoisins();
-
+        Set<Sommet> sommetAEnlever = new HashSet<>();
+        for (Sommet s : g.sommets){
+            if (!X.contains(s)){
+                sommetAEnlever.add(s);
             }
-            Sommet temp = X.iterator().next();
-            if (g.getSommets().contains(temp)){
-
-            }
-*/
-
-
-        throw new RuntimeException("Méthode à implémenter");
+        }
+        Graphe gInduit = new Graphe(g);
+        for (Sommet s : sommetAEnlever){
+            gInduit.supprimerSommet(s);
+        }
+        this.sommets = gInduit.getSommets();
     }
 
     /**
@@ -116,7 +116,45 @@ public class Graphe {
      * L'ensemble de joueurs du nouveau sommet sera l'union des ensembles de joueurs des sommets fusionnés.
      */
     public static Graphe fusionnerEnsembleSommets(Graphe g, Set<Sommet> ensemble) {
-        throw new RuntimeException("Méthode à implémenter");
+        Graphe gFusion = new Graphe(g);
+        for (Sommet t : ensemble){ // gFusion a mtn les sommets qui ne sont pas en ensemble MAIS avec les arêtes des sommets supprimés
+            gFusion.sommets.remove(t);
+        }
+
+        fusionnerSommets(ensemble, g); // calcul pour le sommet de l'ensemble
+
+        gFusion.sommets.add(ensemble.iterator().next()); // rajoute le sommet fusionné à gFusion + rattache
+
+        return gFusion;
+    }
+
+    private static void fusionnerSommets(Set<Sommet> ensemble, Graphe g){
+        List<Sommet> sommetEnsemble = new ArrayList<>(ensemble); // conversion de Set en List pour pouvoir trier
+        int surcout = 0; // calcul du surcout total
+        int nbPoints = 0; // calcul du nbPointVictoire total
+        Set<Integer> joueurs = new HashSet<>();
+        for (Sommet s : ensemble){
+            surcout += s.getSurcout();
+            nbPoints += s.getNbPointsVictoire();
+            joueurs.addAll(s.getJoueurs()); //no repeat puisque HashSet<>
+        }
+
+        Sommet minimum = new Sommet.SommetBuilder().setIndice(sommetEnsemble.get(0).getIndice()).setJoueurs(joueurs).setSurcout(surcout).setNbPointsVictoire(nbPoints).createSommet();
+
+        g.rebrancherSommets(ensemble, minimum);
+
+        ensemble.clear();
+        ensemble.add(minimum);
+        sommetEnsemble.sort(new PlusPetitSommet());
+    }
+
+    private void rebrancherSommets(Set<Sommet> ensemble, Sommet minimum){
+        for (Sommet t : this.sommets){
+            if (t.getVoisins().containsAll(ensemble)){
+                t.getVoisins().removeAll(ensemble);
+                t.ajouterVoisin(minimum);
+            }
+        }
     }
 
     /**
@@ -178,7 +216,7 @@ public class Graphe {
      * @param i l'entier correspondant à l'indice du sommet à ajouter dans le graphe
      */
     public boolean ajouterSommet(int i) {
-        Sommet sommet = new Sommet.SommetBuilder().setIndice(i).setJoueurs(null).setSurcout(0).setNbPointsVictoire(0).createSommet();
+        Sommet sommet = new Sommet.SommetBuilder().setIndice(i).setSurcout(0).setNbPointsVictoire(0).createSommet();
         if (!sommets.contains(sommet)){
             sommets.add(sommet);
             return true;
@@ -293,7 +331,7 @@ public class Graphe {
         return !(g.sommets.isEmpty());
     }
 
-    public Graphe eplucherDegres1(){ //enlève tous les sommets de degré 1
+    private Graphe eplucherDegres1(){ //enlève tous les sommets de degré 1
         Graphe g = new Graphe(this);
         boolean check = false;
         while (!check){

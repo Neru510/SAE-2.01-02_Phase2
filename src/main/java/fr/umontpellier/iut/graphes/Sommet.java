@@ -104,10 +104,7 @@ public class Sommet {
     }
 
     public boolean estVoisin(Sommet sommet) {
-        if (voisins.contains(sommet)){
-            return true;
-        }
-        return false;
+        return voisins.contains(sommet);
     }
 
     @Override
