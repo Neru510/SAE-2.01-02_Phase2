@@ -10,10 +10,7 @@ import org.junit.jupiter.api.Timeout;
 import fr.umontpellier.iut.graphes.Graphe;
 import fr.umontpellier.iut.trains.plateau.Plateau;
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -358,6 +355,20 @@ public class GrapheTest {
         Graphe gFusion = Graphe.fusionnerEnsembleSommets(g, X);
 
         assertEquals(g.getSommets(), gFusion.getSommets());
+    }
+
+    @Test
+    public void test_sequenceEstGraphe(){
+        List<Integer> X = new ArrayList<>();
+        X.add(1);
+        X.add(2);
+        X.add(1);
+        assertTrue(Graphe.sequenceEstGraphe(X));
+        X.add(1);
+        assertFalse(Graphe.sequenceEstGraphe(X));
+        X.remove(1);
+        X.add(5);
+        assertFalse(Graphe.sequenceEstGraphe(X));
     }
 
     @Test

@@ -101,7 +101,13 @@ public class Graphe {
      * Pré-requis : on peut supposer que la séquence est triée dans l'ordre croissant.
      */
     public static boolean sequenceEstGraphe(List<Integer> sequence) {
-        throw new RuntimeException("Méthode à implémenter");
+        double sum = 0;
+        for (Integer x : sequence){
+            sum += x;
+            if (x >= sequence.size()) return false;
+        }
+        sum = sum/2;
+        return (int) sum == sum;
     }
 
     /**
