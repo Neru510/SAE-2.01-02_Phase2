@@ -399,7 +399,69 @@ public class Graphe {
      * @return le surcout total minimal du parcours entre le sommet de depart et le sommet d'arrivée
      */
     public int getDistance(Sommet depart, Sommet arrivee) {
-        throw new RuntimeException("Méthode à implémenter");
+        List<List<Sommet>> possiblites = new ArrayList<>();
+        List<Sommet> deb = new ArrayList<>();
+        List<Sommet> sommetsEnleves = new ArrayList<>();
+        deb.add(depart);
+        possiblites.add(deb);
+        List<Sommet> derniereList = new ArrayList<>();
+        Sommet sommetCourant = depart;
+        while (!sommetCourant.equals(arrivee)){
+            sommetsEnleves.add(sommetCourant);
+            Set<Sommet> voisins = sommetCourant.getVoisins();
+            List<Sommet> lastList = findTheLastOne(sommetCourant, possiblites);
+            if (lastList != null){
+                for (Sommet s : voisins){
+                    if (!sommetsEnleves.contains(s)) {
+                        List<Sommet> liste = new ArrayList<>(lastList);
+                        liste.add(s);
+                        possiblites.add(liste);
+                    }
+                }
+                possiblites.remove(lastList);
+                List<Sommet> listLeastCostly = returnTheLeastCostly(possiblites);
+                sommetCourant = listLeastCostly.get(listLeastCostly.size()-1);
+                derniereList = listLeastCostly;
+            }
+            else {
+                break;
+            }
+
+        }
+
+        int surcout = 0;
+
+        for (Sommet s : derniereList){
+            surcout += s.getSurcout();
+        }
+        surcout -= derniereList.get(0).getSurcout();
+
+        return surcout;
+    }
+
+    private static List<Sommet> findTheLastOne(Sommet sommet, List<List<Sommet>> possiblites){
+        for (List<Sommet> sommetList : possiblites){
+            if (sommetList.get(sommetList.size() - 1).equals(sommet)){
+                return sommetList;
+            }
+        }
+        return null;
+    }
+
+    private static List<Sommet> returnTheLeastCostly(List<List<Sommet>> possibilites){
+        List<Sommet> leastCostly = null;
+        int surcout = -1;
+        for (List<Sommet> ls : possibilites){
+            int surcoutlist = 0;
+            for (Sommet s : ls){
+                surcoutlist += s.getSurcout();
+            }
+            if (surcout == -1 || surcout < surcoutlist){
+                surcout = surcoutlist;
+                leastCostly = ls;
+            }
+        }
+        return leastCostly;
     }
 
     /**
