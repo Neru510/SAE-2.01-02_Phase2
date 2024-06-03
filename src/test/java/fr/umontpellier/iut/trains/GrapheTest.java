@@ -405,6 +405,24 @@ public class GrapheTest {
     }
 
     @Test
+    public void test_getDistance_3(){
+        Graphe g = new Graphe();
+        Sommet s1 = new Sommet.SommetBuilder().setIndice(1).setSurcout(1).setJoueurs(null).setNbPointsVictoire(0).createSommet();
+        Sommet s2 = new Sommet.SommetBuilder().setIndice(2).setSurcout(3).setJoueurs(null).setNbPointsVictoire(0).createSommet();
+        Sommet s3 = new Sommet.SommetBuilder().setIndice(3).setSurcout(1).setJoueurs(null).setNbPointsVictoire(0).createSommet();
+        Sommet s4 = new Sommet.SommetBuilder().setIndice(4).setSurcout(2).setJoueurs(null).setNbPointsVictoire(3).createSommet();
+        Sommet s5 = new Sommet.SommetBuilder().setIndice(5).setSurcout(2).setJoueurs(null).setNbPointsVictoire(0).createSommet();
+        g.ajouterSommet(s1);
+        g.ajouterSommet(s2);
+        g.ajouterSommet(s3);
+        g.ajouterSommet(s4);
+        g.ajouterArete(s1, s2);
+        g.ajouterArete(s2, s3);
+        g.ajouterArete(s4, s5);
+        assertEquals(Integer.MAX_VALUE, g.getDistance(s1, s5));
+    }
+
+    @Test
     public void main(){
         Jeu jeu = new Jeu(new String[]{"Batman", "Robin"}, new String[]{}, Plateau.TOKYO);
         Graphe graphe = jeu.getGraphe();

@@ -399,6 +399,7 @@ public class Graphe {
      * @return le surcout total minimal du parcours entre le sommet de depart et le sommet d'arrivée
      */
     public int getDistance(Sommet depart, Sommet arrivee) {
+        boolean check = false;
         List<List<Sommet>> possiblites = new ArrayList<>();
         List<Sommet> deb = new ArrayList<>();
         List<Sommet> sommetsEnleves = new ArrayList<>();
@@ -420,23 +421,35 @@ public class Graphe {
                 }
                 possiblites.remove(lastList);
                 List<Sommet> listLeastCostly = returnTheLeastCostly(possiblites);
-                sommetCourant = listLeastCostly.get(listLeastCostly.size()-1);
+                if (listLeastCostly == null){
+                    return Integer.MAX_VALUE;
+                }
                 derniereList = listLeastCostly;
+                sommetCourant = listLeastCostly.get(listLeastCostly.size()-1);
             }
             else {
                 break;
             }
+            if (sommetCourant.equals(arrivee)){
+                check = true;
+            }
 
         }
 
-        int surcout = 0;
+        if (check){
+            int surcout = 0;
 
-        for (Sommet s : derniereList){
-            surcout += s.getSurcout();
+            for (Sommet s : derniereList){
+                surcout += s.getSurcout();
+            }
+            surcout -= derniereList.get(0).getSurcout();
+
+            return surcout;
         }
-        surcout -= derniereList.get(0).getSurcout();
+        else {
+            return Integer.MAX_VALUE;
+        }
 
-        return surcout;
     }
 
     private static List<Sommet> findTheLastOne(Sommet sommet, List<List<Sommet>> possiblites){
