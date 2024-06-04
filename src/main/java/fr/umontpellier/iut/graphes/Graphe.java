@@ -67,16 +67,14 @@ public class Graphe {
 
     public Graphe(Graphe graphe){
         this.sommets = new HashSet<>();
-        int i = 0;
         for (Sommet a : graphe.sommets){
             Sommet s = new Sommet.SommetBuilder().setIndice(a.getIndice()).setJoueurs(a.getJoueurs()).setSurcout(a.getSurcout()).setNbPointsVictoire(a.getNbPointsVictoire()).createSommet();
             sommets.add(s);
         }
         for (Sommet a : graphe.sommets) {
             for (Sommet voisin : a.getVoisins()) {
-                this.getSommet(i).ajouterVoisin(this.getSommet(voisin.getIndice()));
+                graphe.ajouterArete(this.getSommet(a.getIndice()), this.getSommet(voisin.getIndice()));
             }
-            i++;
         }
     }
 
@@ -340,7 +338,6 @@ public class Graphe {
     public boolean possedeUnCycle() {
         if (sommets.size() < 3) return false;
         Graphe g = eplucherDegres(1);
-        int a = g.sommets.size();
         return !(g.sommets.isEmpty());
     }
 
@@ -476,7 +473,7 @@ public class Graphe {
             for (Sommet s : ls){
                 surcoutlist += s.getSurcout();
             }
-            if (surcout == -1 || surcout < surcoutlist){
+            if (surcout == -1 || surcout > surcoutlist){
                 surcout = surcoutlist;
                 leastCostly = ls;
             }

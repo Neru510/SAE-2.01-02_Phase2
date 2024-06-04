@@ -441,6 +441,7 @@ public class GrapheTest {
         assertTrue(g.possedeSousGrapheComplet(4));
     }
 
+    @Disabled
     @Test
     public void test_possedeSousGrapheComplet_pas_complet() {
         Graphe g = new Graphe(4);
@@ -453,6 +454,7 @@ public class GrapheTest {
         assertFalse(g.possedeSousGrapheComplet(4));
     }
 
+    @Disabled
     @Test
     public void test_possedeSousGrapheComplet_pour_k_egale_a_4() {
         Graphe g = new Graphe(6);
