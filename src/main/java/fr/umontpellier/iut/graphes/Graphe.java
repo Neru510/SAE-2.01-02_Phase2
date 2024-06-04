@@ -332,18 +332,18 @@ public class Graphe {
      */
     public boolean possedeUnCycle() {
         if (sommets.size() < 3) return false;
-        Graphe g = eplucherDegres1();
+        Graphe g = eplucherDegres(1);
         int a = g.sommets.size();
         return !(g.sommets.isEmpty());
     }
 
-    private Graphe eplucherDegres1(){ //enlève tous les sommets de degré 1
+    private Graphe eplucherDegres(int n){ //enlève tous les sommets de degré 1
         Graphe g = new Graphe(this);
         boolean check = false;
         while (!check){
             check = true;
             for (Sommet s : sommets){
-                if (g.sommets.contains(s) && degre(s) <= 1){
+                if (g.sommets.contains(s) && degre(s) <= n){
                     g.supprimerSommet(s);
                     check = false;
                 }

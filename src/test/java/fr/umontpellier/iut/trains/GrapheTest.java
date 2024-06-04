@@ -213,7 +213,7 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(3), g.getSommet(4));
         g.ajouterArete(g.getSommet(3), g.getSommet(5));
         g.ajouterArete(g.getSommet(4), g.getSommet(5));
-        //Graphe gg = g.eplucherDegres1();
+        //Graphe gg = g.eplucherDegres(1);
         //assertEquals(3, gg.getNbSommets());
     }
 
@@ -226,7 +226,7 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(2), g.getSommet(3));
         g.ajouterArete(g.getSommet(3), g.getSommet(4));
         g.ajouterArete(g.getSommet(4), g.getSommet(5));
-        //Graphe gg = g.eplucherDegres1();
+        //Graphe gg = g.eplucherDegres(1);
         //assertEquals(0, gg.getNbSommets());
     }
 
