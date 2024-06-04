@@ -12,11 +12,6 @@ public class TuileTerrain extends Tuile {
     }
 
     @Override
-    public String getType() {
-        return type.toString();
-    }
-
-    @Override
     public int getSurcout(Joueur joueur) {
         if (joueur.hasEffet(EffetTour.VOIE_SOUTERRAINE)) {
             return 0;

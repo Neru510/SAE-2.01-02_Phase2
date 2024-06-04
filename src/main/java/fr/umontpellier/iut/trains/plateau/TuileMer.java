@@ -8,8 +8,8 @@ public class TuileMer extends Tuile {
     }
 
     @Override
-    public String getType() {
-        return "Mer";
+    public boolean estMer(){
+        return true;
     }
 
     @Override

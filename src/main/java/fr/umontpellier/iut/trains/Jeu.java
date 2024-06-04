@@ -404,7 +404,7 @@ public class Jeu implements Runnable {
     public Set<Sommet> transformeTuileEnSommet(){
         Set<Sommet> sommets = new HashSet<>();
         for (int i = 0; i < tuiles.size(); i++){
-            if (!tuiles.get(i).getType().equals("Mer")){
+            if (!tuiles.get(i).estMer()){
                 Sommet s = new Sommet(tuiles.get(i), this);
                 sommets.add(s);
             }
@@ -447,7 +447,7 @@ public class Jeu implements Runnable {
     public Graphe getGraphe(Joueur joueur) {
         Set<Sommet> sommets = new HashSet<>();
         for (int i = 0; i < tuiles.size(); i++){
-            if (tuiles.get(i).hasRail(joueur) && !tuiles.get(i).getType().equals("Mer")){
+            if (tuiles.get(i).hasRail(joueur) && !tuiles.get(i).estMer()){
                 Sommet s = new Sommet(tuiles.get(i), this);
                 sommets.add(s);
             }

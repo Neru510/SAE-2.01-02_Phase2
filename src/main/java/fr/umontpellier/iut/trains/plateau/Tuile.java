@@ -14,7 +14,9 @@ public abstract class Tuile {
         this.rails = new HashSet<>();
     }
 
-    public abstract String getType();
+    public boolean estMer(){
+        return false;
+    };
 
     public Set<Joueur> getRails(){
         return rails;

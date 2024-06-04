@@ -27,11 +27,6 @@ public class TuileVille extends Tuile {
     }
 
     @Override
-    public String getType() {
-        return "Ville";
-    }
-
-    @Override
     public void ajouterGare() {
         nbGaresPosees += 1;
     }
