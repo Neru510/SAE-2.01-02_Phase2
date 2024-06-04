@@ -481,4 +481,42 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(5), g.getSommet(6));
         assertFalse(g.possedeSousGrapheComplet(4));
     }
+
+    @Test
+    public void test_getColorationGloutonne_1(){
+        Graphe g = new Graphe(4);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(0));
+        Map<Integer, Set<Sommet>> map1 = g.getColorationGloutonne();
+        assertEquals(2, map1.size());
+    }
+
+    @Test
+    public void test_getColorationGloutonne_2(){
+        Graphe g = new Graphe(5);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(0));
+        Map<Integer, Set<Sommet>> map1 = g.getColorationGloutonne();
+        assertEquals(3, map1.size());
+    }
+    @Test
+    public void test_getColorationGloutonne_3(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(0));
+        Map<Integer, Set<Sommet>> map1 = g.getColorationGloutonne();
+        ArrayList<Integer> expectedResults = new ArrayList<>();
+        expectedResults.add(2);
+        expectedResults.add(3);
+        assertTrue(expectedResults.contains(map1.size()));
+    }
 }

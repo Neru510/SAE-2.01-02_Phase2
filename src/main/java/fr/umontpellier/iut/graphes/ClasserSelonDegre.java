@@ -2,10 +2,10 @@ package fr.umontpellier.iut.graphes;
 
 import java.util.Comparator;
 
-public class PlusPetitSommet implements Comparator<Sommet> {
+public class ClasserSelonDegre implements Comparator<Sommet> {
+
     @Override
     public int compare(Sommet sommet, Sommet t1) {
-        return sommet.getIndice() - t1.getIndice();
+        return t1.getVoisins().size() - sommet.getVoisins().size();
     }
-
 }

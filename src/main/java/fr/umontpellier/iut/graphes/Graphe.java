@@ -386,7 +386,40 @@ public class Graphe {
      * (si deux sommets ont le même degré, alors on les ordonne par indice croissant).
      */
     public Map<Integer, Set<Sommet>> getColorationGloutonne() {
-        throw new RuntimeException("Méthode à implémenter");
+        List<Integer> couleurs = new ArrayList<>();
+        for (int i = 0; i < this.getNbSommets(); i++){ // création des couleurs
+            couleurs.add(i);
+        }
+        List<Sommet> ordre = new ArrayList<>(this.getSommets());
+        ordre.sort(new ClasserSelonDegre());
+
+        Map<Integer, Set<Sommet>> colorationGloutonne = new HashMap<>();
+        Map<Sommet, Integer> coloration = new HashMap<>();
+        Set<Integer> couleursMises = new HashSet<>();
+
+        for (Sommet s : ordre){
+            List<Integer> couleursPossibles = new ArrayList<>(couleurs);
+            Set<Sommet> voisins = s.getVoisins();
+            for (Sommet voisin : voisins){
+                if (coloration.containsKey(voisin)){
+                    couleursPossibles.remove(coloration.get(voisin));
+                }
+            }
+            coloration.put(s, couleursPossibles.get(0));
+            couleursMises.add(couleursPossibles.get(0));
+        }
+
+        for (Integer i : couleursMises){
+            Set<Sommet> sommetSet = new HashSet<>();
+            for (Map.Entry<Sommet, Integer> entry : coloration.entrySet()){
+                if (Objects.equals(entry.getValue(), i)){
+                    sommetSet.add(entry.getKey());
+                }
+            }
+            colorationGloutonne.put(i, sommetSet);
+        }
+
+        return colorationGloutonne;
     }
 
     /**
