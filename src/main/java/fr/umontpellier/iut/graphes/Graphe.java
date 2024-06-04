@@ -67,9 +67,16 @@ public class Graphe {
 
     public Graphe(Graphe graphe){
         this.sommets = new HashSet<>();
+        int i = 0;
         for (Sommet a : graphe.sommets){
             Sommet s = new Sommet.SommetBuilder().setIndice(a.getIndice()).setJoueurs(a.getJoueurs()).setSurcout(a.getSurcout()).setNbPointsVictoire(a.getNbPointsVictoire()).createSommet();
             sommets.add(s);
+        }
+        for (Sommet a : graphe.sommets) {
+            for (Sommet voisin : a.getVoisins()) {
+                this.getSommet(i).ajouterVoisin(this.getSommet(voisin.getIndice()));
+            }
+            i++;
         }
     }
 
@@ -90,7 +97,7 @@ public class Graphe {
         }
         Graphe gInduit = new Graphe(g);
         for (Sommet s : sommetAEnlever){
-            gInduit.supprimerSommet(s);
+            gInduit.supprimerSommet(gInduit.getSommet(s.getIndice())); // gInduit.supprimerSommet(s);
         }
         this.sommets = gInduit.getSommets();
     }
@@ -253,9 +260,9 @@ public class Graphe {
      * @return true si et seulement si this est complet.
      */
     public boolean estComplet() {
-        int  ordre = this.sommets.size();
+        int ordre = this.sommets.size();
         int tailleMax = ordre*(ordre-1)/2;
-        return ordre == tailleMax;
+        return tailleMax == getNbAretes();
     }
 
     /**
@@ -549,7 +556,36 @@ public class Graphe {
      * @return true si et seulement si this possède un sous-graphe complet d'ordre {@code k}
      */
     public boolean possedeSousGrapheComplet(int k) {
-        throw new RuntimeException("Méthode à implémenter");
+        if (getNbSommets() == k && this.estComplet() == true) {
+            return true;
+        }
+        boolean nEstPasComplet = true;
+        Graphe test = new Graphe(this);
+        while (nEstPasComplet) {
+            List<Sommet> sommetsASup = new ArrayList<>(sommetAvecLeMoinsDArete(test));
+            //int rd = (int) Math.random() * ((this.getNbSommets()-k) - 0);
+            test.supprimerSommet(sommetsASup.get(0));
+            if (test.estComplet()){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public List<Sommet> sommetAvecLeMoinsDArete(Graphe g){
+        List<Sommet> res = new ArrayList<>();
+        int min = g.getSommet(0).getVoisins().size();
+        res.add(g.getSommet(0));
+        for (int i = 0; i < g.getSommets().size(); i++) {
+            if (min > g.getSommet(i).getVoisins().size()){
+                min = g.getSommet(i).getVoisins().size();
+                res.clear();
+                res.add(g.getSommet(i));
+            } else if (min == g.getSommet(i).getVoisins().size()) {
+                res.add(g.getSommet(i));
+            }
+        }
+        return res;
     }
 
     /**
