@@ -438,6 +438,7 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(1), g.getSommet(3));
         g.ajouterArete(g.getSommet(2), g.getSommet(3));
         assertTrue(g.estComplet());
+        assertFalse(g.possedeUnIsthme());
         assertTrue(g.possedeSousGrapheComplet(4));
     }
 
@@ -518,5 +519,42 @@ public class GrapheTest {
         expectedResults.add(2);
         expectedResults.add(3);
         assertTrue(expectedResults.contains(map1.size()));
+    }
+
+    @Test
+    public void test_possedeUnIsthme_faux(){
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(0));
+        assertFalse(g.possedeUnIsthme());
+        assertTrue(g.possedeUnCycle());
+        assertTrue(g.estConnexe());
+    }
+
+    @Test
+    public void test_possedeUnIsthme_vrai(){
+        /*
+        forme du graphe :
+
+        /|_|\
+        \| |/
+
+        * */
+
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(0));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(3));
+        assertTrue(g.possedeUnIsthme());
+        assertTrue(g.possedeUnCycle());
+        assertTrue(g.estConnexe());
     }
 }

@@ -1,9 +1,5 @@
 package fr.umontpellier.iut.graphes;
 
-import fr.umontpellier.iut.trains.Joueur;
-import org.glassfish.grizzly.utils.ArraySet;
-
-import javax.swing.text.GapContent;
 import java.util.*;
 
 /**
@@ -360,7 +356,41 @@ public class Graphe {
      * @return true si et seulement si this a un isthme
      */
     public boolean possedeUnIsthme() {
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Graphe> graphes = this.separerEnPlusieursComposantesConnexes();
+        for (Graphe g : graphes){
+            for (Sommet s : g.sommets){ // méthode non optimisée à voir si assez de temps
+                if (this.testerSommetTousSesVoisins(s)) return true;
+            }
+        }
+        return false;
+    }
+
+    public Set<Graphe> separerEnPlusieursComposantesConnexes(){
+        Set<Graphe> graphes = new HashSet<>();
+        if (this.estConnexe()){
+            graphes.add(this);
+            return graphes;
+        }
+        List<Sommet> sommetSet = new ArrayList<>(sommets);
+        while (sommetSet.size() < sommets.size()){
+            Graphe g = new Graphe(getClasseConnexite(sommetSet.get(0)));
+            graphes.add(g);
+            sommetSet.removeAll(g.sommets);
+        }
+        return graphes;
+    }
+
+    public boolean testerSommetTousSesVoisins(Sommet s){
+        Graphe g = new Graphe(this);
+        Set<Sommet> voisins = new HashSet<>(g.getSommet(s.getIndice()).getVoisins());
+        for (Sommet voisin : voisins){
+            g.supprimerArete(s, voisin);
+            if (!g.estConnexe()){
+                return true;
+            }
+            g.ajouterArete(s, voisin);
+        }
+        return false;
     }
 
     public void ajouterArete(Sommet s, Sommet t) {
@@ -429,7 +459,14 @@ public class Graphe {
      * pré-requis : l'ensemble de départ et le sommet d'arrivée sont inclus dans l'ensemble des sommets de this
      */
     public int getDistance(Set<Sommet> depart, Sommet arrivee) {
-        throw new RuntimeException("Méthode à implémenter");
+        int distance = -1;
+        for (Sommet s : depart){
+            int distance2 = getDistance(s, arrivee);
+            if (distance == -1 || distance2 < distance){
+                distance = distance2;
+            }
+        }
+        return distance;
     }
 
     /**
