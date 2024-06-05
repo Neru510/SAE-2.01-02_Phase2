@@ -1,5 +1,9 @@
 package fr.umontpellier.iut.graphes;
 
+import fr.umontpellier.iut.trains.Joueur;
+import org.glassfish.grizzly.utils.ArraySet;
+
+import javax.swing.text.GapContent;
 import java.util.*;
 
 /**
@@ -15,6 +19,26 @@ public class Graphe {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Graphe graphe = (Graphe) o;
+        /*
+        Graphe g = (Graphe) o;
+        List<Sommet> sommetsDeG = new ArrayList<>(graphe.getSommets());
+        List<Sommet> listDeVoisinDeG = new ArrayList<>(sommetsDeG.get(0).getVoisins());
+        List<Sommet> sommetsDeThis = new ArrayList<>(this.getSommets());
+        List<Sommet> listDeVoisindeThis = new ArrayList<>(sommetsDeThis.get(0).getVoisins());
+        boolean bon = true;
+        for (int i = 0; i < graphe.getNbSommets(); i++){
+            if (!(listDeVoisindeThis.isEmpty()) && listDeVoisinDeG.isEmpty()){
+                for (int y = 0; y < listDeVoisindeThis.size() ; y++){
+                    if (!sommetsDeThis.get(i).estVoisin(listDeVoisindeThis.get(y))){
+                        bon = false;
+                    }
+                }
+                i++;
+            } else {
+                return false;
+            }
+        }
+        */
         return Objects.equals(sommets, graphe.sommets);
     }
 
@@ -621,34 +645,45 @@ public class Graphe {
         if (getNbSommets() == k && this.estComplet() == true) {
             return true;
         }
-        boolean nEstPasComplet = true;
-        Graphe test = new Graphe(this);
-        while (nEstPasComplet) {
-            List<Sommet> sommetsASup = new ArrayList<>(sommetAvecLeMoinsDArete(test));
-            //int rd = (int) Math.random() * ((this.getNbSommets()-k) - 0);
-            test.supprimerSommet(sommetsASup.get(0));
-            if (test.estComplet()){
-                return true;
+        for (Sommet s : sommets) {
+            Set<Sommet> sousGraphePotentiel = new HashSet<>();
+            sousGraphePotentiel.add(s);
+            for (Sommet voisin : s.getVoisins()) {
+                Set<Sommet> voisinsSimilaires = listeDeVoisinsVoisins(voisin, k-2, false, null, new HashSet<>());
+                if (voisinsSimilaires.contains(s)) {
+                    sousGraphePotentiel.add(voisin);
+                    if (sousGraphePotentiel.size() == k) {
+                        return true;
+                    }
+                }
             }
         }
         return false;
     }
-
-    public List<Sommet> sommetAvecLeMoinsDArete(Graphe g){
-        List<Sommet> res = new ArrayList<>();
-        int min = g.getSommet(0).getVoisins().size();
-        res.add(g.getSommet(0));
-        for (int i = 0; i < g.getSommets().size(); i++) {
-            if (min > g.getSommet(i).getVoisins().size()){
-                min = g.getSommet(i).getVoisins().size();
-                res.clear();
-                res.add(g.getSommet(i));
-            } else if (min == g.getSommet(i).getVoisins().size()) {
-                res.add(g.getSommet(i));
-            }
-        }
-        return res;
+    public Set<Sommet> listeDeVoisinsVoisins(Sommet SommetTester, int nbVoisinSimilaireAttendu, boolean commencer, Sommet premierVoisinBon, Set<Sommet> visited) {
+    int conteurVoisins = 0;
+    Set<Sommet> sousGrapheEventuel = new HashSet<>();
+    Set<Sommet> voisinsDuSommetTester = SommetTester.getVoisins();
+    if (commencer){
+        voisinsDuSommetTester.remove(premierVoisinBon);
     }
+    for (Sommet voisinDuSommetTester : voisinsDuSommetTester) { //1 3 et 6
+        if (!visited.contains(voisinDuSommetTester)) {
+            visited.add(voisinDuSommetTester);
+            for (Sommet voisinDuVoisin : voisinsDuSommetTester) {
+                if (voisinDuSommetTester.estVoisin(voisinDuVoisin)) {
+                    conteurVoisins++;
+                    if (nbVoisinSimilaireAttendu == conteurVoisins) {
+                        sousGrapheEventuel.add(voisinDuSommetTester);
+                        listeDeVoisinsVoisins(voisinDuSommetTester, nbVoisinSimilaireAttendu, true, voisinDuSommetTester, visited);
+                    }
+                }
+            }
+            conteurVoisins = 0;
+        }
+    }
+    return sousGrapheEventuel;
+}
 
     /**
      * @param g un graphe

@@ -464,24 +464,73 @@ public class GrapheTest {
         g.ajouterArete(g.getSommet(0), g.getSommet(3));
         g.ajouterArete(g.getSommet(0), g.getSommet(4));
         g.ajouterArete(g.getSommet(0), g.getSommet(5));
-        g.ajouterArete(g.getSommet(0), g.getSommet(6));
         g.ajouterArete(g.getSommet(1), g.getSommet(2));
         g.ajouterArete(g.getSommet(1), g.getSommet(3));
         g.ajouterArete(g.getSommet(1), g.getSommet(4));
         g.ajouterArete(g.getSommet(1), g.getSommet(5));
-        g.ajouterArete(g.getSommet(1), g.getSommet(6));
         g.ajouterArete(g.getSommet(2), g.getSommet(3));
         g.ajouterArete(g.getSommet(2), g.getSommet(4));
         g.ajouterArete(g.getSommet(2), g.getSommet(5));
-        g.ajouterArete(g.getSommet(2), g.getSommet(6));
         g.ajouterArete(g.getSommet(3), g.getSommet(4));
         g.ajouterArete(g.getSommet(3), g.getSommet(5));
-        g.ajouterArete(g.getSommet(3), g.getSommet(6));
         g.ajouterArete(g.getSommet(4), g.getSommet(5));
-        g.ajouterArete(g.getSommet(4), g.getSommet(6));
-        g.ajouterArete(g.getSommet(5), g.getSommet(6));
-        assertFalse(g.possedeSousGrapheComplet(4));
+        assertTrue(g.possedeSousGrapheComplet(4));
     }
+
+    @Test
+    public void test_possedeSousGrapheComplet_complet_en_3() {
+        Graphe g = new Graphe(5);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(0));
+        g.ajouterArete(g.getSommet(1), g.getSommet(3));
+        assertFalse(g.estComplet());
+        assertTrue(g.possedeSousGrapheComplet(3));
+    }
+
+    @Test
+    public void test_possedeSousGrapheComplet_en_6_complet_en_4() {
+        Graphe g = new Graphe(6);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(0));
+        g.ajouterArete(g.getSommet(0), g.getSommet(3));
+        g.ajouterArete(g.getSommet(0), g.getSommet(4));
+        g.ajouterArete(g.getSommet(3), g.getSommet(5));
+        assertFalse(g.estComplet());
+        assertTrue(g.possedeSousGrapheComplet(4));
+    }
+
+    @Test
+    public void test_possedeSousGrapheComplet_en_7_complet_en_4() {
+        Graphe g = new Graphe(8);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(5), g.getSommet(6));
+        g.ajouterArete(g.getSommet(6), g.getSommet(0));
+        g.ajouterArete(g.getSommet(6), g.getSommet(2));
+        g.ajouterArete(g.getSommet(6), g.getSommet(3));
+        g.ajouterArete(g.getSommet(5), g.getSommet(2));
+        g.ajouterArete(g.getSommet(5), g.getSommet(3));
+
+        g.ajouterArete(g.getSommet(4), g.getSommet(0));
+        g.ajouterArete(g.getSommet(4), g.getSommet(1));
+        g.ajouterArete(g.getSommet(7), g.getSommet(0));
+        g.ajouterArete(g.getSommet(7), g.getSommet(1));
+        g.ajouterArete(g.getSommet(7), g.getSommet(3));
+        g.ajouterArete(g.getSommet(7), g.getSommet(4));
+        assertFalse(g.estComplet());
+        assertTrue(g.possedeSousGrapheComplet(4));
+    }
+
 
     @Test
     public void test_getColorationGloutonne_1(){
