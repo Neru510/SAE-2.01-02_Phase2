@@ -356,7 +356,7 @@ public class Graphe {
      * @return true si et seulement si this a un isthme
      */
     public boolean possedeUnIsthme() {
-        Set<Graphe> graphes = this.separerEnPlusieursComposantesConnexes();
+        Set<Graphe> graphes = this.separerEnPlusieursGrapheSelonComposantesConnexes();
         for (Graphe g : graphes){
             for (Sommet s : g.sommets){ // méthode non optimisée à voir si assez de temps
                 if (this.testerSommetTousSesVoisins(s)) return true;
@@ -365,22 +365,17 @@ public class Graphe {
         return false;
     }
 
-    public Set<Graphe> separerEnPlusieursComposantesConnexes(){
+    private Set<Graphe> separerEnPlusieursGrapheSelonComposantesConnexes(){
+        Set<Set<Sommet>> ss = this.getEnsembleClassesConnexite();
         Set<Graphe> graphes = new HashSet<>();
-        if (this.estConnexe()){
-            graphes.add(this);
-            return graphes;
-        }
-        List<Sommet> sommetSet = new ArrayList<>(sommets);
-        while (sommetSet.size() < sommets.size()){
-            Graphe g = new Graphe(getClasseConnexite(sommetSet.get(0)));
+        for (Set<Sommet> sommetSet : ss){
+            Graphe g = new Graphe(sommetSet);
             graphes.add(g);
-            sommetSet.removeAll(g.sommets);
         }
         return graphes;
     }
 
-    public boolean testerSommetTousSesVoisins(Sommet s){
+    private boolean testerSommetTousSesVoisins(Sommet s){
         Graphe g = new Graphe(this);
         Set<Sommet> voisins = new HashSet<>(g.getSommet(s.getIndice()).getVoisins());
         for (Sommet voisin : voisins){
