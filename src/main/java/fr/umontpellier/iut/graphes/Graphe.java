@@ -1,10 +1,14 @@
 package fr.umontpellier.iut.graphes;
 
+import fr.umontpellier.iut.trains.Jeu;
 import fr.umontpellier.iut.trains.Joueur;
+import fr.umontpellier.iut.trains.plateau.Tuile;
 import org.glassfish.grizzly.utils.ArraySet;
 
 import javax.swing.text.GapContent;
 import java.util.*;
+
+import static java.lang.System.exit;
 
 /**
  * Graphe simple non-orienté pondéré représentant le plateau du jeu.
@@ -51,6 +55,43 @@ public class Graphe {
 
     public Graphe(Set<Sommet> sommets) {
         this.sommets = sommets;
+    }
+
+    public Graphe(Jeu jeu){
+        this.sommets = new HashSet<>();
+        for (Tuile t : jeu.getTuiles()){
+            if (!t.estMer()){
+                this.sommets.add(new Sommet(t, jeu));
+            }
+        }
+        for (Tuile tuile : jeu.getTuiles()){
+            if (!tuile.estMer()){
+                for (Tuile voisin : tuile.getVoisines()){
+                    if (!voisin.estMer()){
+                        this.ajouterArete(this.getSommet(jeu.getTuiles().indexOf(tuile)), this.getSommet(jeu.getTuiles().indexOf(voisin)));
+                    }
+                }
+            }
+
+        }
+    }
+    public Graphe(Jeu jeu, Joueur joueur){
+        this.sommets = new HashSet<>();
+        for (Tuile t : jeu.getTuiles()){
+            if (t.hasRail(joueur) && !t.estMer()){
+                this.sommets.add(new Sommet(t, jeu));
+            }
+        }
+        for (Tuile tuile : jeu.getTuiles()){
+            if (tuile.hasRail(joueur) && !tuile.estMer()){
+                for (Tuile voisin : tuile.getVoisines()){
+                    if (voisin.hasRail(joueur) && !voisin.estMer()){
+                        this.ajouterArete(this.getSommet(jeu.getTuiles().indexOf(tuile)), this.getSommet(jeu.getTuiles().indexOf(voisin)));
+                    }
+                }
+            }
+
+        }
     }
 
     /**
@@ -170,7 +211,8 @@ public class Graphe {
             joueurs.addAll(s.getJoueurs()); //no repeat puisque HashSet<>
         }
 
-        Sommet minimum = new Sommet.SommetBuilder().setIndice(sommetEnsemble.get(0).getIndice()).setJoueurs(joueurs).setSurcout(surcout).setNbPointsVictoire(nbPoints).createSommet();
+        Sommet minimum = new Sommet.SommetBuilder().setIndice(sommetEnsemble.get(0).getIndice()).
+                setJoueurs(joueurs).setSurcout(surcout).setNbPointsVictoire(nbPoints).createSommet();
 
         g.rebrancherSommets(ensemble, minimum);
 
@@ -435,10 +477,7 @@ public class Graphe {
      * (si deux sommets ont le même degré, alors on les ordonne par indice croissant).
      */
     public Map<Integer, Set<Sommet>> getColorationGloutonne() {
-        List<Integer> couleurs = new ArrayList<>();
-        for (int i = 0; i < this.getNbSommets(); i++){ // création des couleurs
-            couleurs.add(i);
-        }
+        List<Integer> couleurs = this.creeCouleur();
         List<Sommet> ordre = new ArrayList<>(this.getSommets());
         ordre.sort(new ClasserSelonDegre());
 
@@ -458,6 +497,12 @@ public class Graphe {
             couleursMises.add(couleursPossibles.get(0));
         }
 
+        this.ajouterColorationDansMap(couleursMises, coloration, colorationGloutonne);
+
+        return colorationGloutonne;
+    }
+
+    public void ajouterColorationDansMap(Set<Integer> couleursMises, Map<Sommet, Integer> coloration, Map<Integer, Set<Sommet>> colorationGloutonne){
         for (Integer i : couleursMises){
             Set<Sommet> sommetSet = new HashSet<>();
             for (Map.Entry<Sommet, Integer> entry : coloration.entrySet()){
@@ -467,8 +512,14 @@ public class Graphe {
             }
             colorationGloutonne.put(i, sommetSet);
         }
+    }
 
-        return colorationGloutonne;
+    public List<Integer> creeCouleur(){
+        List<Integer> couleurs = new ArrayList<>();
+        for (int i = 0; i < this.degreMax() + 1; i++){ // création des couleurs
+            couleurs.add(i);
+        }
+        return couleurs;
     }
 
     /**
@@ -635,14 +686,142 @@ public class Graphe {
      * Pré-requis : le graphe est issu du plateau du jeu Train (entre autres, il est planaire).
      */
     public Map<Integer, Set<Sommet>> getColorationPropreOptimale() {
-        throw new RuntimeException("Méthode à implémenter");
+        Map<Sommet, Integer> coloration = new HashMap<>();
+        List<Integer> couleurs = creeCouleur();
+        coloration.put(this.getSommets().iterator().next(), couleurs.get(0));
+        while (coloration.size() < this.getNbSommets()){
+            List<Sommet> sommetsARajouter = sommetsARajouter(coloration);
+            if (!sommetsARajouter.isEmpty()){
+                for (Sommet s : sommetsARajouter){
+                    colorierSommet(s, coloration, couleurs);
+                }
+            }
+            else {
+                for (Sommet s : this.getSommets()){
+                    if (!coloration.containsKey(s)){
+                        colorierSommet(s, coloration, couleurs);
+                    }
+                }
+            }
+        }
+
+        Map<Integer, Set<Sommet>> colorationFinale = new HashMap<>();
+        Set<Integer> couleursMises = new HashSet<>();
+        for (Map.Entry<Sommet, Integer> entry : coloration.entrySet()){
+            couleursMises.add(entry.getValue());
+        }
+        this.ajouterColorationDansMap(couleursMises, coloration, colorationFinale);
+
+        return colorationFinale;
+    }
+
+    public List<Sommet> sommetsARajouter(Map<Sommet, Integer> coloration){
+        List<Sommet> sommetsARajouter = new ArrayList<>();
+        for (Map.Entry<Sommet, Integer> entry : coloration.entrySet()){
+            for (Sommet s : entry.getKey().getVoisins()){
+                if (!coloration.containsKey(s) && verifierSommetPlusOuEgalDeXVoisinsColores(s, coloration, 2)){
+                    sommetsARajouter.add(s);
+                }
+            }
+        }
+
+        if (sommetsARajouter.isEmpty()){
+            for (Map.Entry<Sommet, Integer> entry : coloration.entrySet()){
+                for (Sommet s : entry.getKey().getVoisins()){
+                    if (!coloration.containsKey(s)){
+                        sommetsARajouter.add(s);
+                        return sommetsARajouter;
+                    }
+                }
+            }
+        }
+
+        return  sommetsARajouter;
+    }
+
+    public boolean verifierSommetPlusOuEgalDeXVoisinsColores(Sommet sommet, Map<Sommet, Integer> coloration, int X){
+        int i = 0;
+        for (Sommet voisin : sommet.getVoisins()){
+            if (coloration.containsKey(voisin)){
+                i++;
+            }
+        }
+        return i >= 2;
+    }
+
+    public void enleverSommetsDontTousLesVoisinsSontColores(Map<Sommet, Integer> sommetsColores, List<Sommet> sommetsVoisinsNonColores){
+        for (Map.Entry<Sommet, Integer> entry : sommetsColores.entrySet()){
+            int size = entry.getKey().getVoisins().size();
+            int i = 0;
+            for (Sommet v : entry.getKey().getVoisins()){
+                if (sommetsColores.containsKey(v)) {
+                    i++;
+                }
+            }
+            if (i < size){
+                sommetsVoisinsNonColores.add(entry.getKey());
+            }
+        }
+    }
+
+
+    public void colorierSommet(Sommet sommet, Map<Sommet, Integer> sommetsColores, List<Integer> couleurs){
+        List<Integer> couleursPrises = new ArrayList<>();
+        for (Sommet voisin : sommet.getVoisins()){
+            if (sommetsColores.containsKey(voisin)){
+                couleursPrises.add(sommetsColores.get(voisin));
+            }
+        }
+        for (Integer couleur : couleurs){
+            if (!couleursPrises.contains(couleur)){
+                sommetsColores.put(sommet, couleur);
+                break;
+            }
+        }
+    }
+
+    public List<Sommet> sommetsPossibleColorier(Map<Sommet, Integer> sommetsColores, List<Sommet> sommetsVoisinsNonColores, int degre){
+        List<Sommet> sommetsPossibles = new ArrayList<>();
+        if (sommetsVoisinsNonColores.size() == 0){
+            sommetsPossibles = new ArrayList<>(this.getSommets());
+            return sommetsPossibles;
+        }
+        else {
+            for (Sommet s : sommetsVoisinsNonColores){
+                for (Sommet voisin : s.getVoisins()){
+                    Set<Sommet> voisins = s.getVoisins();
+                    if (degre == 1){
+                        if (!sommetsColores.containsKey(voisin)) sommetsPossibles.add(voisin);
+                    }
+                    else {
+                        for (Sommet v : voisin.getVoisins()){
+                            if (this.verifierSiSommetAAuMoinsXSommetsColores(v, sommetsColores, degre)){
+                                if (!sommetsColores.containsKey(voisin)) sommetsPossibles.add(voisin);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        return sommetsPossibles;
+    }
+
+    public boolean verifierSiSommetAAuMoinsXSommetsColores(Sommet sommet, Map<Sommet, Integer> sommetsColores, int X){
+        int i = 0;
+        for (Sommet s : sommet.getVoisins()){
+            if (sommetsColores.containsKey(s)){
+                i++;
+            }
+        }
+        return i >= X;
     }
 
     /**
      * @return true si et seulement si this possède un sous-graphe complet d'ordre {@code k}
      */
     public boolean possedeSousGrapheComplet(int k) {
-        if (getNbSommets() == k && this.estComplet() == true) {
+        if (getNbSommets() == k && this.estComplet()) {
             return true;
         }
         for (Sommet s : sommets) {

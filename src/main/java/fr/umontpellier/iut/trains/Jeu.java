@@ -403,25 +403,19 @@ public class Jeu implements Runnable {
 
     public Set<Sommet> transformeTuileEnSommet(){
         Set<Sommet> sommets = new HashSet<>();
-        for (int i = 0; i < tuiles.size(); i++){
-            if (!tuiles.get(i).estMer()){
-                Sommet s = new Sommet(tuiles.get(i), this);
+        for (Tuile tuile : tuiles) {
+            if (!tuile.estMer()) {
+                Sommet s = new Sommet(tuile, this);
                 sommets.add(s);
             }
         }
         return sommets;
     }
 
-    public void ajouterVoisine(Graphe g, Tuile t, Set<Sommet> sommets, Sommet ts){
+    public void ajouterVoisine(Graphe g, Tuile t){
         List<Tuile> voisins = t.getVoisines();
         for (Tuile v : voisins){
-            Sommet trial = new Sommet(v, this);
-            for (Sommet s : sommets){
-                if (trial.equals(s)){
-                    g.ajouterArete(s, ts);
-                    break;
-                }
-            }
+            g.ajouterArete(g.getSommet(tuiles.indexOf(t)), g.getSommet(tuiles.indexOf(v)));
         }
     }
 
@@ -429,14 +423,7 @@ public class Jeu implements Runnable {
      * @return le graphe des tuiles du jeu (sans les tuiles Mer)
      */
     public Graphe getGraphe() {
-        Set<Sommet> sommets = transformeTuileEnSommet();
-
-        Graphe g = new Graphe(sommets);
-
-        for (Sommet s : sommets){
-            ajouterVoisine(g, tuiles.get(s.getIndice()), sommets, s);
-        }
-        return g;
+       return new Graphe(this);
     }
 
     /**
@@ -445,18 +432,6 @@ public class Jeu implements Runnable {
      *         rails
      */
     public Graphe getGraphe(Joueur joueur) {
-        Set<Sommet> sommets = new HashSet<>();
-        for (int i = 0; i < tuiles.size(); i++){
-            if (tuiles.get(i).hasRail(joueur) && !tuiles.get(i).estMer()){
-                Sommet s = new Sommet(tuiles.get(i), this);
-                sommets.add(s);
-            }
-        }
-        Graphe g = new Graphe(sommets);
-        for (Sommet s : sommets){
-            ajouterVoisine(g, tuiles.get(s.getIndice()), sommets, s);
-        }
-
-        return new Graphe(sommets);
+        return new Graphe(this, joueur);
     }
 }

@@ -39,6 +39,7 @@ public class GrapheTest {
         assertEquals(0, graphe.getDistance(graphe.getSommet(3), graphe.getSommet(54)));
         assertEquals(11, graphe.getDistance(graphe.getSommet(67), graphe.getSommet(9)));
         assertEquals(2, graphe.getDistance(graphe.getSommet(34), graphe.getSommet(35)));
+        assertEquals(4, graphe.getColorationPropreOptimale().size());
     }
 
     @Test
@@ -46,11 +47,28 @@ public class GrapheTest {
         Jeu jeu = new Jeu(new String[]{"Lois", "Clark"}, new String[]{}, Plateau.OSAKA);
         Graphe graphe = jeu.getGraphe();
 
+
+        assertTrue(testJeuEtGraphe(jeu, graphe));
         assertEquals(66, graphe.getNbSommets());
         assertEquals(151, graphe.getNbAretes());
         assertTrue(graphe.estConnexe());
         assertTrue(graphe.possedeUnCycle());
         assertEquals(6, graphe.degreMax());
+        assertEquals(3, graphe.getColorationPropreOptimale().size());
+    }
+
+    public boolean testJeuEtGraphe(Jeu jeu, Graphe graphe){
+        for (Sommet s : graphe.getSommets()){
+            if (jeu.getTuile(s.getIndice()) != null){ // verif si existe
+                for (Sommet voisin : s.getVoisins()){
+                    if (!jeu.getTuile(s.getIndice()).getVoisines().contains(jeu.getTuile(voisin.getIndice()))) return false;
+                }
+            }
+            else {
+                return false;
+            }
+        }
+        return true;
     }
 
     @Test
