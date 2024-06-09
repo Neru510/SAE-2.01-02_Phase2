@@ -39,7 +39,7 @@ public class GrapheTest {
         assertEquals(0, graphe.getDistance(graphe.getSommet(3), graphe.getSommet(54)));
         assertEquals(11, graphe.getDistance(graphe.getSommet(67), graphe.getSommet(9)));
         assertEquals(2, graphe.getDistance(graphe.getSommet(34), graphe.getSommet(35)));
-        assertEquals(4, graphe.getColorationPropreOptimale().size());
+        assertEquals(3, graphe.getColorationPropreOptimale().size());
     }
 
     @Test

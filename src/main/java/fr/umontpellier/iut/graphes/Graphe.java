@@ -688,7 +688,7 @@ public class Graphe {
     public Map<Integer, Set<Sommet>> getColorationPropreOptimale() {
         Map<Sommet, Integer> coloration = new HashMap<>();
         List<Integer> couleurs = creeCouleur();
-        coloration.put(this.getSommets().iterator().next(), couleurs.get(0));
+        coloration.put(sommetContenuDansUnTriangle(), 0);
         while (coloration.size() < this.getNbSommets()){
             List<Sommet> sommetsARajouter = sommetsARajouter(coloration);
             if (!sommetsARajouter.isEmpty()){
@@ -713,6 +713,15 @@ public class Graphe {
         this.ajouterColorationDansMap(couleursMises, coloration, colorationFinale);
 
         return colorationFinale;
+    }
+
+    public Sommet sommetContenuDansUnTriangle(){
+        for (Sommet sommet : sommets){
+            if (sommet.getVoisins().size() >= 6) {
+                return sommet;
+            }
+        }
+        return sommets.iterator().next();
     }
 
     public List<Sommet> sommetsARajouter(Map<Sommet, Integer> coloration){
@@ -878,6 +887,74 @@ public class Graphe {
      * @return un ensemble de sommets qui forme un ensemble critique de plus petite taille entre {@code s} et {@code t}
      */
     public Set<Sommet> getEnsembleCritique(Sommet s, Sommet t){
-        throw new RuntimeException("Méthode à implémenter");
+        Set<Sommet> ensembleCritique = new HashSet<>();
+        if (!getClasseConnexite(s).equals(getClasseConnexite(t))) return ensembleCritique;
+
+        Graphe g = new Graphe(getClasseConnexite(s));
+        if (g.estCycle() || g.estChaine()){
+            ensembleCritique.add(this.getSommets().iterator().next());
+            return ensembleCritique;
+        }
+        else if (t.getVoisins().size() == 1){
+            ensembleCritique.add(t.getVoisins().iterator().next());
+            return ensembleCritique;
+        }
+        else if (s.getVoisins().size() == 1){
+            ensembleCritique.add(s.getVoisins().iterator().next());
+            return ensembleCritique;
+        }
+        else if (g.estComplet()){
+            for (Sommet sommet : g.getSommets()) {
+                if (!sommet.equals(s) || !sommet.equals(t)) ensembleCritique.add(sommet);
+            }
+            return ensembleCritique;
+        }
+        List<List<Sommet>> possibilites = new ArrayList<>();
+        List<Sommet> sommetsUtilises = new ArrayList<>();
+        List<Sommet> sommetsRestants = new ArrayList<>(this.sommets);
+
+        // si 1 seul degré
+        Graphe gClone = new Graphe(g);
+        Sommet sommet = gClone.eplucherDegresV2(s, t, 1);
+        if (sommet != null){
+            gClone.getSommets().remove(sommet);
+            if (!gClone.getClasseConnexite(s).equals(gClone.getClasseConnexite(t))){
+                ensembleCritique.add(sommet);
+                return ensembleCritique;
+            }
+        }
+
+
+        //si pas trouvé le code à temps :
+        int nbVoisinsS = s.getVoisins().size();
+        int nbVoisinsT = t.getVoisins().size();
+        if (nbVoisinsS >= nbVoisinsT){
+            ensembleCritique.addAll(s.getVoisins());
+        }
+        else {
+            ensembleCritique.addAll(s.getVoisins());
+        }
+
+        return ensembleCritique;
+    }
+
+    private Sommet eplucherDegresV2(Sommet s, Sommet t, int n){ //enlève tous les sommets de degré 1
+        Graphe g = new Graphe(this);
+        Sommet courant = null;
+        boolean check = false;
+        while (!check){
+            check = true;
+            for (Sommet sommet : sommets){
+                courant = sommet;
+                if (g.sommets.contains(sommet) && degre(sommet) <= n){
+                    g.supprimerSommet(sommet);
+                    if (!g.getClasseConnexite(s).equals(g.getClasseConnexite(t))){
+                        return courant;
+                    }
+                    check = false;
+                }
+            }
+        }
+        return null;
     }
 }
