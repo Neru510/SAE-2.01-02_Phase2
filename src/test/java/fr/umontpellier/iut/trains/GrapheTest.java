@@ -447,6 +447,16 @@ public class GrapheTest {
     }
 
     @Test
+    public void test_estCycle(){
+        Graphe g = new Graphe(4);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(3), g.getSommet(0));
+        assertTrue(g.estCycle());
+    }
+
+    @Test
     public void test_possedeSousGrapheComplet_avec_graphe_deja_complet() {
         Graphe g = new Graphe(4);
         g.ajouterArete(g.getSommet(0), g.getSommet(1));
@@ -623,5 +633,41 @@ public class GrapheTest {
         assertTrue(g.possedeUnIsthme());
         assertTrue(g.possedeUnCycle());
         assertTrue(g.estConnexe());
+    }
+
+    @Test
+    public void test_possedeSousGrapheIsomorphe_vrai(){
+        Graphe aTrouver = new Graphe(7);
+        aTrouver.ajouterArete(aTrouver.getSommet(0), aTrouver.getSommet(1));
+        aTrouver.ajouterArete(aTrouver.getSommet(1), aTrouver.getSommet(2));
+        aTrouver.ajouterArete(aTrouver.getSommet(2), aTrouver.getSommet(3));
+        aTrouver.ajouterArete(aTrouver.getSommet(2), aTrouver.getSommet(5));
+        aTrouver.ajouterArete(aTrouver.getSommet(3), aTrouver.getSommet(4));
+        aTrouver.ajouterArete(aTrouver.getSommet(3), aTrouver.getSommet(6));
+        aTrouver.ajouterArete(aTrouver.getSommet(5), aTrouver.getSommet(6));
+
+        Graphe g = new Graphe(14);
+        g.ajouterArete(g.getSommet(0), g.getSommet(1));
+        g.ajouterArete(g.getSommet(0), g.getSommet(2));
+        g.ajouterArete(g.getSommet(0), g.getSommet(3));
+        g.ajouterArete(g.getSommet(1), g.getSommet(2));
+        g.ajouterArete(g.getSommet(1), g.getSommet(5));
+        g.ajouterArete(g.getSommet(2), g.getSommet(3));
+        g.ajouterArete(g.getSommet(2), g.getSommet(4));
+        g.ajouterArete(g.getSommet(3), g.getSommet(4));
+        g.ajouterArete(g.getSommet(4), g.getSommet(5));
+        g.ajouterArete(g.getSommet(4), g.getSommet(9));
+        g.ajouterArete(g.getSommet(5), g.getSommet(6));
+        g.ajouterArete(g.getSommet(5), g.getSommet(8));
+        g.ajouterArete(g.getSommet(6), g.getSommet(7));
+        g.ajouterArete(g.getSommet(6), g.getSommet(8));
+        g.ajouterArete(g.getSommet(7), g.getSommet(8));
+        g.ajouterArete(g.getSommet(8), g.getSommet(9));
+        g.ajouterArete(g.getSommet(9), g.getSommet(10));
+        g.ajouterArete(g.getSommet(10), g.getSommet(11));
+        g.ajouterArete(g.getSommet(10), g.getSommet(12));
+        g.ajouterArete(g.getSommet(12), g.getSommet(13));
+
+        assertTrue(g.possedeSousGrapheIsomorphe(aTrouver));
     }
 }

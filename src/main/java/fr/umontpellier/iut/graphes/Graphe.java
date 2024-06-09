@@ -673,11 +673,21 @@ public class Graphe {
     public int degreMax() {
         int degreMax = 0;
         for (Sommet s : sommets){
-            if (s.getVoisins().size() > degreMax){
+            if (degre(s) > degreMax){
                 degreMax = s.getVoisins().size();
             }
         }
         return degreMax;
+    }
+
+    public int degreMin() {
+        int degreMin = degre(getSommet(0));
+        for (Sommet s : sommets){
+            if (degre(s) < degreMin){
+                degreMin = s.getVoisins().size();
+            }
+        }
+        return degreMin;
     }
 
     /**
@@ -855,7 +865,7 @@ public class Graphe {
     if (commencer){
         voisinsDuSommetTester.remove(premierVoisinBon);
     }
-    for (Sommet voisinDuSommetTester : voisinsDuSommetTester) { //1 3 et 6
+    for (Sommet voisinDuSommetTester : voisinsDuSommetTester) {
         if (!visited.contains(voisinDuSommetTester)) {
             visited.add(voisinDuSommetTester);
             for (Sommet voisinDuVoisin : voisinsDuSommetTester) {
@@ -878,8 +888,81 @@ public class Graphe {
      * @return true si et seulement si this possède un sous-graphe isomorphe à {@code g}
      */
     public boolean possedeSousGrapheIsomorphe(Graphe g) {
-        throw new RuntimeException("Méthode à implémenter");
+        int nbSommetDeG = g.getNbSommets();
+        int nbSommetATester = this.getNbSommets() - nbSommetDeG;
+
+        //Set<Sommet> sommetsDeThis = this.sommets;
+        //Set<Sommet> sommetsDeG = g.getSommets();
+        int[][] matriceDeG = g.genererMatrice();
+        Set<Set<Sommet>> sequenceDejaVue = new HashSet<>();
+        boolean sequenceValide = false;
+        Graphe test = null;
+        do {
+            test = new Graphe(this);
+            sequenceValide = test.genererSequence(nbSommetATester, sequenceDejaVue, g);
+            if (sequenceValide) {
+                sequenceValide = comparerMatrices(matriceDeG, test.genererMatrice());
+            }
+            if (!sequenceValide) {
+                sequenceDejaVue.add(test.getSommets());
+            }
+        } while (!sequenceValide);
+
+        return sequenceValide;
     }
+
+
+    public boolean genererSequence(int nombreASupprimer, Set<Set<Sommet>> sequenceDejaVue, Graphe graphe){
+        Random random = new Random();
+        List<Sommet> listeSommets = new ArrayList<>(this.sommets);
+
+        for (int i = 0; i < nombreASupprimer; i++) {
+            if (!listeSommets.isEmpty()) {
+                int indexAleatoire = random.nextInt(listeSommets.size());
+                Sommet sommetASupprimer = listeSommets.get(indexAleatoire);
+                this.supprimerSommet(sommetASupprimer);
+                listeSommets.remove(indexAleatoire);
+            } else {
+                break;
+            }
+        }
+        if (degreMin() < graphe.degreMin() || degreMax() < graphe.degreMax()){
+            return false;
+        }
+        if (!sequenceDejaVue.contains(this.sommets)) {
+            return true;
+        }
+        return false;
+    }
+
+    public int[][] genererMatrice() {
+        int taille = this.getNbSommets();
+        int[][] matrice = new int[taille][taille];
+
+        for (Sommet s : this.sommets) {
+            for (Sommet voisin : s.getVoisins()) {
+                matrice[s.getIndice()][voisin.getIndice()] = 1;
+            }
+        }
+
+        return matrice;
+    }
+
+        public boolean comparerMatrices(int[][] matriceG ,int[][] matriceTest) {
+            if (matriceG.length != matriceTest.length || matriceG[0].length != matriceTest[0].length) {
+                return false;
+            }
+            for (int i = 0; i < matriceG.length; i++) {
+                for (int j = 0; j < matriceG[i].length; j++) {
+                    if (matriceG[i][j] > matriceTest[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        }
+
+
 
     /**
      * @param s
