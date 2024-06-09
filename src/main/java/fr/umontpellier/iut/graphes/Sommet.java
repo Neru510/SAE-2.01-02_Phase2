@@ -100,7 +100,9 @@ public class Sommet {
     }
 
     public void ajouterVoisin(Sommet voisin) {
-        this.voisins.add(voisin);
+        if (voisin != null){
+            this.voisins.add(voisin);
+        }
     }
 
     public boolean estVoisin(Sommet sommet) {

@@ -3,12 +3,8 @@ package fr.umontpellier.iut.graphes;
 import fr.umontpellier.iut.trains.Jeu;
 import fr.umontpellier.iut.trains.Joueur;
 import fr.umontpellier.iut.trains.plateau.Tuile;
-import org.glassfish.grizzly.utils.ArraySet;
 
-import javax.swing.text.GapContent;
 import java.util.*;
-
-import static java.lang.System.exit;
 
 /**
  * Graphe simple non-orienté pondéré représentant le plateau du jeu.
@@ -168,11 +164,22 @@ public class Graphe {
      */
     public static boolean sequenceEstGraphe(List<Integer> sequence) {
         double sum = 0;
-        for (Integer x : sequence){
+        int max = 0;
+        List<Integer> sequenceCopie = new ArrayList<>(sequence);
+        for (Integer x :sequence){
+            if (x == 0){
+                sequenceCopie.remove(x);
+            }
+        }
+        for (Integer x : sequenceCopie){
             sum += x;
-            if (x >= sequence.size()) return false;
+            if (x >= sequenceCopie.size()) return false;
+            if (x > max) max = x;
         }
         sum = sum/2;
+        if ((int) sum != sum) return false;
+
+
         return (int) sum == sum;
     }
 
@@ -304,6 +311,7 @@ public class Graphe {
      * @return true si le sommet a été ajouté, false sinon
      */
     public boolean ajouterSommet(Sommet s) {
+        if (s == null) return false;
         return sommets.add(s);
     }
 
@@ -331,43 +339,39 @@ public class Graphe {
     public boolean estChaine() {
         if (sommets.size() < 2) return true;
         Sommet a = null;
-        boolean check = false;
+        int i = 0;
+
         for (Sommet s : sommets){
-            Set<Sommet> sommetSet = s.getVoisins();
-            if (sommetSet.size() > 2){
+            if (s.getVoisins().size() > 2 || s.getVoisins().size() < 1){
                 return false;
             }
-            else if (sommetSet.size() == 1){
-                if (a == null) a = s; // 1er sommet de degré 1
-                else if (!check) check = true; // 2d sommet de degré 1
+            else if (s.getVoisins().size() == 1){
+                if (a == null) {
+                    a = s;
+                    i++;
+                } // 1er sommet de degré 1
+                else if (i < 2) i++; // 2d sommet de degré 1
                 else return false; // s'il y a 3 sommets de degré 1
             }
         }
-        if (a == null || !check){ // s'il n'y a pas de sommet de degré 1 OU s'il y a seulement 1 sommet de degré 1
-            return false;
-        }
+        if (i < 2) return false;
         // le graphe a donc 2 sommets de degré 1 et que des sommets de degré 2
         Set<Sommet> sommetDejaVisite = new HashSet<>();
-        Sommet generique = a;
-        Sommet avantGuardiste = null;
-        check = false;
-        while (!check){
-            sommetDejaVisite.add(generique);
-            Set<Sommet> voisins = generique.getVoisins();
-            for (Sommet s : voisins){
-                if (!sommetDejaVisite.contains(s)){
-                    avantGuardiste = generique;
-                    generique = s;
-                }
-                else if (!a.equals(s) && voisins.size() == 1){
+        Sommet sommetCourant = a;
+        sommetDejaVisite.add(sommetCourant);
+        boolean check = false;
+        while (sommetDejaVisite.size() < sommets.size()){
+            check = false;
+            for (Sommet voisin : sommetCourant.getVoisins()){
+                if (!sommetDejaVisite.contains(voisin)){
+                    sommetDejaVisite.add(voisin);
+                    sommetCourant = voisin;
                     check = true;
                 }
-                else if (avantGuardiste != null && !avantGuardiste.equals(s)){
-                    return false;
-                }
             }
+            if (!check) return false;
         }
-        return sommetDejaVisite.size() == sommets.size();
+        return true;
     }
 
     /**
@@ -391,6 +395,7 @@ public class Graphe {
      * et que le graphe vide est un arbre.
      */
     public boolean estForet() {
+        if (this.sommets.isEmpty()) return true;
         return estConnexe() && !possedeUnCycle();
     }
 
@@ -455,8 +460,10 @@ public class Graphe {
     }
 
     public void ajouterArete(Sommet s, Sommet t) {
-        s.ajouterVoisin(t);
-        t.ajouterVoisin(s);
+        if (s != null && t != null && (t != s) && (sommets.contains(s) && sommets.contains(t))) {
+            s.ajouterVoisin(t);
+            t.ajouterVoisin(s);
+        }
     }
 
     public void supprimerArete(Sommet s, Sommet t) {
@@ -477,7 +484,7 @@ public class Graphe {
      * (si deux sommets ont le même degré, alors on les ordonne par indice croissant).
      */
     public Map<Integer, Set<Sommet>> getColorationGloutonne() {
-        List<Integer> couleurs = this.creeCouleur();
+        List<Integer> couleurs = this.creerCouleur();
         List<Sommet> ordre = new ArrayList<>(this.getSommets());
         ordre.sort(new ClasserSelonDegre());
 
@@ -514,7 +521,7 @@ public class Graphe {
         }
     }
 
-    public List<Integer> creeCouleur(){
+    public List<Integer> creerCouleur(){
         List<Integer> couleurs = new ArrayList<>();
         for (int i = 0; i < this.degreMax() + 1; i++){ // création des couleurs
             couleurs.add(i);
@@ -673,7 +680,7 @@ public class Graphe {
     public int degreMax() {
         int degreMax = 0;
         for (Sommet s : sommets){
-            if (degre(s) > degreMax){
+            if (s.getVoisins().size() > degreMax){
                 degreMax = s.getVoisins().size();
             }
         }
@@ -697,7 +704,7 @@ public class Graphe {
      */
     public Map<Integer, Set<Sommet>> getColorationPropreOptimale() {
         Map<Sommet, Integer> coloration = new HashMap<>();
-        List<Integer> couleurs = creeCouleur();
+        List<Integer> couleurs = creerCouleur();
         coloration.put(sommetContenuDansUnTriangle(), 0);
         while (coloration.size() < this.getNbSommets()){
             List<Sommet> sommetsARajouter = sommetsARajouter(coloration);
